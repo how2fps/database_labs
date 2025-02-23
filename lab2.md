@@ -205,8 +205,7 @@ returning a single tuple with one integer field, containing the count.
 * *Insert*: This operator adds the tuples it reads from its child operator to the `tableid` specified in its
   constructor. It should use the `BufferPool.insertTuple()` method to do this.
 
-* *Delete*: This operator deletes the tuples it reads from its child operator ~~from the `tableid` specified in its
-  constructor~~. It should use the `BufferPool.deleteTuple()` method to do this.
+* *Delete*: This operator deletes the tuples it reads from its child operator. It should use the `BufferPool.deleteTuple()` method to do this.
 
 **Exercise 4.**
 
