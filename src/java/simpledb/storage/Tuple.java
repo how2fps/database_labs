@@ -3,6 +3,7 @@ package simpledb.storage;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Tuple maintains information about the contents of a tuple. Tuples have a
@@ -26,6 +27,7 @@ public class Tuple implements Serializable {
         // some code goes here
         this.td = td;
         this.recordId = null;
+        this.fields = new Field[td.numFields()];
     }
 
     /**
@@ -78,7 +80,7 @@ public class Tuple implements Serializable {
      */
     public Field getField(int i) {
         // some code goes here
-        return null;
+        return fields[i];
     }
 
     /**
@@ -91,7 +93,12 @@ public class Tuple implements Serializable {
      */
     public String toString() {
         // some code goes here
-        throw new UnsupportedOperationException("Implement this");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < fields.length; i++) {
+            if (i > 0) sb.append("\t");
+            sb.append(fields[i] == null ? "null" : fields[i].toString());
+        }
+        return sb.toString();
     }
 
     /**
@@ -101,7 +108,7 @@ public class Tuple implements Serializable {
     public Iterator<Field> fields()
     {
         // some code goes here
-        return fields.iterator();
+        return Arrays.asList(fields).iterator();
     }
 
     /**
