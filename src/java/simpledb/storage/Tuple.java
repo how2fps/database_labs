@@ -24,7 +24,6 @@ public class Tuple implements Serializable {
      *            instance with at least one field.
      */
     public Tuple(TupleDesc td) {
-        // some code goes here
         this.td = td;
         this.recordId = null;
         this.fields = new Field[td.numFields()];
@@ -34,9 +33,8 @@ public class Tuple implements Serializable {
      * @return The TupleDesc representing the schema of this tuple.
      */
     public TupleDesc getTupleDesc() {
-        // some code goes here
+        if (this.td == null) throw new IllegalStateException();
         return this.td;
-        // return null;
     }
 
     /**

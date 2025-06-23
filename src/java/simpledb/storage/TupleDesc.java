@@ -224,7 +224,9 @@ public class TupleDesc implements Serializable {
      * @return String describing this descriptor.
      */
     public String toString() {
-        // some code goes here
+        if (items==null||items.length==0){
+            return "";
+        }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < items.length; i++) {
             sb.append(items[i].toString());

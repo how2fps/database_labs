@@ -733,8 +733,9 @@ class TupleArrayIterator implements OpIterator {
      * Returns the TupleDesc associated with this OpIterator.
      */
     public TupleDesc getTupleDesc() {
-        return tups.get(0).getTupleDesc();
-    }
+    if (tups.isEmpty()) throw new NoSuchElementException();
+    return tups.get(0).getTupleDesc();
+}
 
     /**
      * Closes the iterator.
