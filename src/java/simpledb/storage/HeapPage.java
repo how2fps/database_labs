@@ -63,7 +63,6 @@ public class HeapPage implements Page {
               header = new byte[getHeaderSize()];
               for (int i = 0; i < header.length; i++)
                      header[i] = dis.readByte();
-
               tuples = new Tuple[numSlots];
               try {
                      // allocate and read the actual records of this page
@@ -83,9 +82,10 @@ public class HeapPage implements Page {
         * @return the number of tuples on this page
         */
        private int getNumTuples() {
-              int pageSize = Database.getBufferPool().getPageSize();
+              Database.getBufferPool();
+              int pageSize = BufferPool.getPageSize();
               int tupleSize = td.getSize();
-              int numberOfTuples = (pageSize * 8) / (tupleSize * 8 + 1);
+              int numberOfTuples = (int) Math.floor((pageSize * 8) / (tupleSize * 8 + 1));
               return numberOfTuples;
        }
 
@@ -322,7 +322,7 @@ public class HeapPage implements Page {
               int byteIndex = i / 8;
               int bitIndex = i % 8;
               byte headerByte = header[byteIndex];
-              int mask = 1 << (7 - bitIndex);
+              int mask = 1 << bitIndex;
               if ((headerByte & mask) != 0) {
                      return true;
               }

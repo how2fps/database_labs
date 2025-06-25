@@ -6,6 +6,7 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import simpledb.common.Database;
 import simpledb.common.DbException;
@@ -138,16 +139,16 @@ public class HeapFile implements DbFile {
 
                      @Override
                      public boolean hasNext() {
-                            return tupleIterator.hasNext();
+                            return tupleIterator != null && tupleIterator.hasNext();
                      }
 
                      @Override
                      public Tuple next() {
                             if (!hasNext()) {
-                                   return null;
+                                   throw new NoSuchElementException();
                             }
                             Tuple t = tupleIterator.next();
-                            if (!tupleIterator.hasNext()) {
+                            if (!tupleIterator.hasNext() || tupleIterator == null) {
                                    pageNo++;
                                    tupleIterator = getTupleIterator(pageNo);
                                    advanceToNextNonEmptyPage();
