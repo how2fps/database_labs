@@ -132,30 +132,28 @@ public class HeapFile implements DbFile {
                      private Iterator<Tuple> tupleIterator = null;
 
                      @Override
-                     public void open() {
-                            tupleIterator = getTupleIterator(0);
-                            advanceToNextNonEmptyPage();
+                     public void open() throws DbException, TransactionAbortedException {
+                            pageNo = 0;
+                            loadNextPage();
                      }
 
                      @Override
-                     public boolean hasNext() {
+                     public boolean hasNext() throws DbException, TransactionAbortedException {
                             return tupleIterator != null && tupleIterator.hasNext();
                      }
 
                      @Override
-                     public Tuple next() {
+                     public Tuple next() throws DbException, TransactionAbortedException, NoSuchElementException {
                             if (!hasNext()) {
                                    throw new NoSuchElementException();
                             }
                             Tuple t = tupleIterator.next();
-                            if (!tupleIterator.hasNext() || tupleIterator == null) {
-                                   advanceToNextNonEmptyPage();
-                            }
                             return t;
                      }
 
                      @Override
-                     public void rewind() {
+                     public void rewind() throws DbException, TransactionAbortedException {
+                            close();
                             open();
                      }
 
@@ -164,28 +162,18 @@ public class HeapFile implements DbFile {
                             tupleIterator = null;
                      }
 
-                     private Iterator<Tuple> getTupleIterator(int pageNo) {
+                     private void loadNextPage() throws DbException, TransactionAbortedException {
                             if (pageNo >= numPages()) {
-                                   return null;
+                                   tupleIterator = null;
+                                   return;
                             }
                             HeapPageId pid = new HeapPageId(getId(), pageNo);
-                            try {
-                                   HeapPage page = (HeapPage) Database.getBufferPool().getPage(
-                                                 tid, pid, Permissions.READ_ONLY);
-                                   return page.iterator();
-                            } catch (TransactionAbortedException e) {
-                                   return null;
-                            } catch (DbException e) {
-                                   return null;
-                            }
+                            HeapPage page = (HeapPage) Database.getBufferPool().getPage(tid, pid,
+                                          Permissions.READ_ONLY);
+                            tupleIterator = page.iterator();
+                            pageNo++;
                      }
 
-                     private void advanceToNextNonEmptyPage() {
-                            while (tupleIterator != null && !tupleIterator.hasNext() && pageNo < numPages()) {
-                                   pageNo = pageNo + 1;
-                                   tupleIterator = getTupleIterator(pageNo);
-                            }
-                     }
               };
 
        }
