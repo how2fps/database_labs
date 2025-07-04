@@ -149,8 +149,6 @@ public class HeapFile implements DbFile {
                             }
                             Tuple t = tupleIterator.next();
                             if (!tupleIterator.hasNext() || tupleIterator == null) {
-                                   pageNo++;
-                                   tupleIterator = getTupleIterator(pageNo);
                                    advanceToNextNonEmptyPage();
                             }
                             return t;
