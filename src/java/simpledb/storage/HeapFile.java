@@ -136,6 +136,9 @@ public class HeapFile implements DbFile {
 
                      @Override
                      public boolean hasNext() throws DbException, TransactionAbortedException {
+                            if (pageNo > numPages()) {
+                                   throw new DbException("End of file reached");
+                            }
                             return tupleIterator != null && tupleIterator.hasNext();
                      }
 
@@ -146,9 +149,6 @@ public class HeapFile implements DbFile {
                             }
                             if (tupleIterator == null) {
                                    loadNextPage();
-                            }
-                            if (tupleIterator == null || !tupleIterator.hasNext()) {
-                                   throw new NoSuchElementException("No tuples in the iterator");
                             }
                             Tuple t = tupleIterator.next();
                             return t;
@@ -178,7 +178,6 @@ public class HeapFile implements DbFile {
                             } catch (TransactionAbortedException e) {
                                    throw e;
                             }
-
                      }
               };
        }
