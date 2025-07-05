@@ -849,7 +849,7 @@ simpledb.storage.PageId
 simpledb.common.DbException
 [B
 java.io.IOException
-java.lang.RuntimeException
+java.lang.IllegalArgumentException
 java.io.File
 simpledb.storage.BufferPool
 simpledb.storage.HeapFile$1
