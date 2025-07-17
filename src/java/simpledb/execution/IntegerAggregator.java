@@ -1,57 +1,91 @@
 package simpledb.execution;
 
 import simpledb.common.Type;
-import simpledb.storage.Tuple;
+import simpledb.storage.*;
+
+import java.util.*;
 
 /**
- * Knows how to compute some aggregate over a set of IntFields.
+ * Computes aggregate functions over a set of IntFields.
  */
 public class IntegerAggregator implements Aggregator {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Aggregate constructor
-     * 
-     * @param gbfield
-     *            the 0-based index of the group-by field in the tuple, or
-     *            NO_GROUPING if there is no grouping
-     * @param gbfieldtype
-     *            the type of the group by field (e.g., Type.INT_TYPE), or null
-     *            if there is no grouping
-     * @param afield
-     *            the 0-based index of the aggregate field in the tuple
-     * @param what
-     *            the aggregation operator
-     */
+    private final int gbfield;
+    private final Type gbfieldtype;
+    private final int afield;
+    private final Op what;
+
+    // Maps group key to aggregate value
+    private final Map<Field, Integer> aggregateValues = new HashMap<>();
+    // Maps group key to count (for AVG)
+    private final Map<Field, Integer> groupCounts = new HashMap<>();
 
     public IntegerAggregator(int gbfield, Type gbfieldtype, int afield, Op what) {
-        // some code goes here
+        this.gbfield = gbfield;
+        this.gbfieldtype = gbfieldtype;
+        this.afield = afield;
+        this.what = what;
     }
 
-    /**
-     * Merge a new tuple into the aggregate, grouping as indicated in the
-     * constructor
-     * 
-     * @param tup
-     *            the Tuple containing an aggregate field and a group-by field
-     */
     public void mergeTupleIntoGroup(Tuple tup) {
-        // some code goes here
+        Field groupKey = (gbfield == NO_GROUPING) ? null : tup.getField(gbfield);
+        int value = ((IntField) tup.getField(afield)).getValue();
+
+        int currentVal = aggregateValues.getOrDefault(groupKey, initialize());
+        int currentCount = groupCounts.getOrDefault(groupKey, 0);
+
+        switch (what) {
+            case SUM:
+            case AVG:
+                aggregateValues.put(groupKey, currentVal + value);
+                break;
+            case MIN:
+                aggregateValues.put(groupKey, (currentCount == 0) ? value : Math.min(currentVal, value));
+                break;
+            case MAX:
+                aggregateValues.put(groupKey, (currentCount == 0) ? value : Math.max(currentVal, value));
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported operation: " + what);
+        }
+
+        groupCounts.put(groupKey, currentCount + 1);
     }
 
-    /**
-     * Create a OpIterator over group aggregate results.
-     * 
-     * @return a OpIterator whose tuples are the pair (groupVal, aggregateVal)
-     *         if using group, or a single (aggregateVal) if no grouping. The
-     *         aggregateVal is determined by the type of aggregate specified in
-     *         the constructor.
-     */
+    private int initialize() {
+        switch (what) {
+            case MIN: return Integer.MAX_VALUE;
+            case MAX: return Integer.MIN_VALUE;
+            default: return 0;
+        }
+    }
+
     public OpIterator iterator() {
-        // some code goes here
-        throw new
-        UnsupportedOperationException("please implement me for lab2");
-    }
+        List<Tuple> resultTuples = new ArrayList<>();
 
+        TupleDesc td = (gbfield == NO_GROUPING)
+            ? new TupleDesc(new Type[]{Type.INT_TYPE})
+            : new TupleDesc(new Type[]{gbfieldtype, Type.INT_TYPE});
+
+        for (Field key : aggregateValues.keySet()) {
+            int aggregateVal = aggregateValues.get(key);
+            if (what == Op.AVG) {
+                int count = groupCounts.get(key);
+                aggregateVal = aggregateVal / count;
+            }
+
+            Tuple t = new Tuple(td);
+            if (gbfield == NO_GROUPING) {
+                t.setField(0, new IntField(aggregateVal));
+            } else {
+                t.setField(0, key);
+                t.setField(1, new IntField(aggregateVal));
+            }
+            resultTuples.add(t);
+        }
+
+        return new TupleIterator(td, resultTuples);
+    }
 }
