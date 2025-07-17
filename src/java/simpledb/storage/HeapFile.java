@@ -92,8 +92,14 @@ public class HeapFile implements DbFile {
 
        // see DbFile.java for javadocs
        public void writePage(Page page) throws IOException {
-              // some code goes here
-              // not necessary for lab1
+              int pageSize = BufferPool.getPageSize();
+              int pageNumber = page.getId().getPageNumber();
+              int offset = pageNumber * pageSize;
+              byte[] data = page.getPageData();
+              try (RandomAccessFile raf = new RandomAccessFile(f, "rw")) {
+                     raf.seek(offset);
+                     raf.write(data);
+              }
        }
 
        /**
@@ -109,17 +115,42 @@ public class HeapFile implements DbFile {
        // see DbFile.java for javadocs
        public List<Page> insertTuple(TransactionId tid, Tuple t)
                      throws DbException, IOException, TransactionAbortedException {
-              // some code goes here
-              return null;
-              // not necessary for lab1
+              List<Page> modifiedPages = new ArrayList<>();
+              for (int i = 0; i < numPages(); i++) {
+                     HeapPageId pid = new HeapPageId(getId(), i);
+                     HeapPage page = (HeapPage) Database.getBufferPool().getPage(
+                                   tid, pid, Permissions.READ_WRITE);
+                     if (page.getNumEmptySlots() > 0) {
+                            page.insertTuple(t);
+                            modifiedPages.add(page);
+                            return modifiedPages;
+                     }
+              }
+              HeapPageId newPid = new HeapPageId(getId(), numPages());
+              HeapPage newPage = new HeapPage(newPid, HeapPage.createEmptyPageData());
+              newPage.insertTuple(t);
+              writePage(newPage);
+              modifiedPages.add(newPage);
+              return modifiedPages;
        }
 
        // see DbFile.java for javadocs
        public ArrayList<Page> deleteTuple(TransactionId tid, Tuple t) throws DbException,
                      TransactionAbortedException {
-              // some code goes here
-              return null;
-              // not necessary for lab1
+              ArrayList<Page> modifiedPages = new ArrayList<>();
+              RecordId rid = t.getRecordId();
+              if (rid == null) {
+                     throw new DbException("No RecordId for tuple");
+              }
+              PageId pageId = rid.getPageId();
+              if (pageId.getTableId() != getId()) {
+                     throw new DbException("Tuple does not exist in this file");
+              }
+              HeapPage page = (HeapPage) Database.getBufferPool().getPage(
+                            tid, pageId, Permissions.READ_WRITE);
+              page.deleteTuple(t);
+              modifiedPages.add(page);
+              return modifiedPages;
        }
 
        // see DbFile.java for javadocs
@@ -136,9 +167,13 @@ public class HeapFile implements DbFile {
 
                      @Override
                      public boolean hasNext() throws DbException, TransactionAbortedException {
-                            if (pageNo > numPages()) {
-                                   throw new DbException("End of file reached");
+                            if (tupleIterator == null) {
+                                   return false;
                             }
+                            if (tupleIterator.hasNext()) {
+                                   return true;
+                            }
+                            loadNextPage();
                             return tupleIterator != null && tupleIterator.hasNext();
                      }
 
@@ -147,11 +182,7 @@ public class HeapFile implements DbFile {
                             if (!hasNext()) {
                                    throw new NoSuchElementException();
                             }
-                            if (tupleIterator == null) {
-                                   loadNextPage();
-                            }
-                            Tuple t = tupleIterator.next();
-                            return t;
+                            return tupleIterator.next();
                      }
 
                      @Override
@@ -163,21 +194,23 @@ public class HeapFile implements DbFile {
                      @Override
                      public void close() {
                             tupleIterator = null;
+                            pageNo = 0;
                      }
 
                      private void loadNextPage() throws DbException, TransactionAbortedException {
-                            if (pageNo >= numPages()) {
-                                   throw new DbException("End of file reached");
-                            }
-                            HeapPageId pid = new HeapPageId(getId(), pageNo);
-                            try {
-                                   HeapPage page = (HeapPage) Database.getBufferPool().getPage(tid, pid,
-                                                 Permissions.READ_ONLY);
-                                   tupleIterator = page.iterator();
+                            tupleIterator = null;
+                            while (pageNo < numPages()) {
+                                   HeapPageId pid = new HeapPageId(getId(), pageNo);
+                                   HeapPage page = (HeapPage) Database.getBufferPool().getPage(
+                                                 tid, pid, Permissions.READ_ONLY);
+                                   Iterator<Tuple> pageIterator = page.iterator();
                                    pageNo++;
-                            } catch (TransactionAbortedException e) {
-                                   throw e;
+                                   if (pageIterator.hasNext()) {
+                                          tupleIterator = pageIterator;
+                                          return;
+                                   }
                             }
+                            tupleIterator = null;
                      }
               };
        }
