@@ -3,6 +3,8 @@ package simpledb.storage;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import simpledb.common.Database;
 import simpledb.common.DbException;
@@ -41,7 +43,13 @@ public class BufferPool {
         */
        public BufferPool(int numPages) {
               this.maxPages = numPages;
-              this.pageCache = new ConcurrentHashMap<>(numPages);
+              // use linked hashmap for lru
+              this.pageCache = new LinkedHashMap<PageId, Page>(numPages, 0.75f, true) {
+                     @Override
+                     protected boolean removeEldestEntry(Map.Entry<PageId, Page> eldest) {
+                            return false;
+                     }
+              };
        }
 
        public static int getPageSize() {
@@ -74,19 +82,20 @@ public class BufferPool {
         * @param perm the requested permissions on the page
         */
        private final int maxPages;
-       private final ConcurrentHashMap<PageId, Page> pageCache;
+       private final LinkedHashMap<PageId, Page> pageCache;
 
        public Page getPage(TransactionId tid, PageId pid, Permissions perm)
-                     throws TransactionAbortedException, DbException {
-              synchronized (this) {
-                     if (pageCache.containsKey(pid)) {
+                     throws TransactionAbortedException, DbException{synchronized (this){
+                     if (pageCache.containsKey(pid)){
                             return pageCache.get(pid);
                      }
-                     if (pageCache.size() >= maxPages) {
-                            throw new DbException("full" + pid);
+                     // evict when full
+                     if (pageCache.size() >=maxPages){
+                            evictPage();
                      }
-                     DbFile f = Database.getCatalog().getDatabaseFile(pid.getTableId());
-                     Page p = f.readPage(pid);
+                     
+                     DbFile f =Database.getCatalog().getDatabaseFile(pid.getTableId());
+                     Page p =f.readPage(pid);
                      pageCache.put(pid, p);
                      return p;
               }
@@ -209,6 +218,10 @@ public class BufferPool {
               // some code goes here
               // not necessary for lab1
 
+
+              for (PageId pid:pageCache.keySet()){
+                     flushPage(pid);
+              }
        }
 
        /**
@@ -223,6 +236,8 @@ public class BufferPool {
        public synchronized void discardPage(PageId pid) {
               // some code goes here
               // not necessary for lab1
+
+              pageCache.remove(pid);
        }
 
        /**
@@ -233,6 +248,13 @@ public class BufferPool {
        private synchronized void flushPage(PageId pid) throws IOException {
               // some code goes here
               // not necessary for lab1
+
+              Page page=pageCache.get(pid);
+              if (page!=null && page.isDirty() != null){
+                     DbFile file =Database.getCatalog().getDatabaseFile(pid.getTableId());
+                     file.writePage(page);
+                     page.markDirty(false, null);
+              }
        }
 
        /**
@@ -250,6 +272,18 @@ public class BufferPool {
        private synchronized void evictPage() throws DbException {
               // some code goes here
               // not necessary for lab1
+
+              
+              if (pageCache.isEmpty()){
+                     throw new DbException("empty");
+              }
+              PageId lruPageId=pageCache.keySet().iterator().next();
+              try{
+                     flushPage(lruPageId);
+                     pageCache.remove(lruPageId);
+              } catch (IOException e) {
+                     throw new DbException("error" + e.getMessage());
+              }
        }
 
 }
