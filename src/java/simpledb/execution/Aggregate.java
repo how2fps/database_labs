@@ -9,7 +9,7 @@ import simpledb.transaction.TransactionAbortedException;
 import java.util.NoSuchElementException;
 
 /**
- * The Aggregation operator that computes an aggregate (e.g., sum, avg, max, min).
+ * Aggregation operator that computes an aggregate over a set of tuples.
  */
 public class Aggregate extends Operator {
 
@@ -33,9 +33,9 @@ public class Aggregate extends Operator {
         Type gfieldType = (gfield == Aggregator.NO_GROUPING) ? null : child.getTupleDesc().getFieldType(gfield);
 
         if (afieldType == Type.INT_TYPE) {
-            aggregator = new IntegerAggregator(gfield, gfieldType, afield, aop);
+            this.aggregator = new IntegerAggregator(gfield, gfieldType, afield, aop);
         } else if (afieldType == Type.STRING_TYPE) {
-            aggregator = new StringAggregator(gfield, gfieldType, afield, aop);
+            this.aggregator = new StringAggregator(gfield, gfieldType, afield, aop);
         } else {
             throw new IllegalArgumentException("Unsupported aggregate field type.");
         }
@@ -73,8 +73,7 @@ public class Aggregate extends Operator {
         child.open();
 
         while (child.hasNext()) {
-            Tuple tup = child.next();
-            aggregator.mergeTupleIntoGroup(tup);
+            aggregator.mergeTupleIntoGroup(child.next());
         }
 
         aggIter = aggregator.iterator();
@@ -102,14 +101,8 @@ public class Aggregate extends Operator {
         if (gfield == Aggregator.NO_GROUPING) {
             return new TupleDesc(new Type[]{Type.INT_TYPE}, new String[]{aggName});
         } else {
-            Type[] types = new Type[]{
-                childTD.getFieldType(gfield),
-                Type.INT_TYPE
-            };
-            String[] names = new String[]{
-                childTD.getFieldName(gfield),
-                aggName
-            };
+            Type[] types = new Type[]{childTD.getFieldType(gfield), Type.INT_TYPE};
+            String[] names = new String[]{childTD.getFieldName(gfield), aggName};
             return new TupleDesc(types, names);
         }
     }
