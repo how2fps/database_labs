@@ -215,7 +215,7 @@ public class BufferPool {
         * break simpledb if running in NO STEAL mode.
         */
        public synchronized void flushAllPages() throws IOException {
-              // Create a copy of the keySet to avoid ConcurrentModificationException
+              
               PageId[] pageIds = pageCache.keySet().toArray(new PageId[pageCache.size()]);
               for (PageId pid : pageIds) {
                      flushPage(pid);
