@@ -56,11 +56,19 @@ simpledb.index.BTreeUtility
 simpledb.storage.IntField
 java.util.HashMap
 simpledb.storage.Field
+<<<<<<< Updated upstream
 java.io.File
 simpledb.index.BTreePageId
 java.lang.Exception
 simpledb.storage.BufferPool
 simpledb.index.BTreeFile
+=======
+simpledb.index.BTreePageId
+java.io.File
+java.lang.Exception
+simpledb.index.BTreeFile
+simpledb.storage.BufferPool
+>>>>>>> Stashed changes
 simpledb.execution.Predicate
 simpledb.transaction.TransactionId
 simpledb.index.BTreeInternalPage
@@ -81,25 +89,44 @@ simpledb.index.BTreePageId
 ||:simpledb.BTreeFileReadTest
 simpledb.systemtest.SimpleDbTestBase
 simpledb.index.BTreeLeafPage
+<<<<<<< Updated upstream
 simpledb.storage.Tuple
 junit.framework.JUnit4TestAdapter
 simpledb.index.BTreeUtility
 simpledb.storage.IntField
+=======
+junit.framework.JUnit4TestAdapter
+simpledb.storage.Tuple
+simpledb.storage.IntField
+simpledb.index.BTreeUtility
+>>>>>>> Stashed changes
 simpledb.index.BTreeRootPtrPage
 simpledb.storage.Field
 simpledb.common.Utility
 simpledb.BTreeFileReadTest
 simpledb.index.BTreePageId
+<<<<<<< Updated upstream
 simpledb.storage.DbFileIterator
 java.lang.Exception
 simpledb.storage.BufferPool
 simpledb.index.BTreeFile
+=======
+java.lang.Exception
+simpledb.storage.DbFileIterator
+simpledb.index.BTreeFile
+simpledb.storage.BufferPool
+>>>>>>> Stashed changes
 simpledb.execution.Predicate
 simpledb.transaction.TransactionId
 simpledb.execution.IndexPredicate
 simpledb.common.Database
+<<<<<<< Updated upstream
 org.junit.Assert
 java.util.NoSuchElementException
+=======
+java.util.NoSuchElementException
+org.junit.Assert
+>>>>>>> Stashed changes
 simpledb.execution.Predicate$Op
 ||:simpledb.execution.Predicate
 java.lang.invoke.MethodHandles$Lookup
@@ -263,17 +290,28 @@ java.util.HashMap
 java.io.IOException
 simpledb.common.Utility
 java.lang.Integer
+<<<<<<< Updated upstream
 simpledb.storage.BufferPool
 simpledb.execution.Predicate
 java.util.ArrayList
+=======
+simpledb.execution.Predicate
+java.util.ArrayList
+simpledb.storage.BufferPool
+>>>>>>> Stashed changes
 simpledb.transaction.TransactionId
 simpledb.systemtest.SystemTestUtil
 simpledb.storage.HeapFile
 java.util.Map
 simpledb.common.Database
 org.junit.Assert
+<<<<<<< Updated upstream
 simpledb.execution.Predicate$Op
 simpledb.transaction.TransactionAbortedException
+=======
+simpledb.transaction.TransactionAbortedException
+simpledb.execution.Predicate$Op
+>>>>>>> Stashed changes
 ||:simpledb.storage.TupleDesc$TDItem
 java.lang.invoke.MethodHandles$Lookup
 simpledb.storage.TupleDesc$TDItem
@@ -302,8 +340,13 @@ simpledb.storage.IntField
 simpledb.index.BTreeUtility$BTreeDeleter
 java.util.Random
 java.lang.Integer
+<<<<<<< Updated upstream
 simpledb.storage.BufferPool
 java.util.ArrayList
+=======
+java.util.ArrayList
+simpledb.storage.BufferPool
+>>>>>>> Stashed changes
 simpledb.execution.Predicate
 simpledb.index.BTreeUtility$BTreeInserter
 simpledb.transaction.TransactionId
@@ -317,8 +360,13 @@ simpledb.storage.Tuple
 java.util.concurrent.BlockingQueue
 simpledb.systemtest.BTreeTest
 simpledb.storage.Field
+<<<<<<< Updated upstream
 simpledb.storage.DbFileIterator
 java.lang.Exception
+=======
+java.lang.Exception
+simpledb.storage.DbFileIterator
+>>>>>>> Stashed changes
 simpledb.index.BTreeFile
 java.util.concurrent.ArrayBlockingQueue
 java.util.List
@@ -342,6 +390,8 @@ simpledb.execution.Predicate
 java.util.List
 simpledb.systemtest.SystemTestUtil
 simpledb.transaction.TransactionId
+simpledb.transaction.TransactionId
+simpledb.systemtest.SystemTestUtil
 java.util.Map
 simpledb.storage.HeapFile
 simpledb.common.Database
@@ -350,6 +400,8 @@ simpledb.execution.SeqScan
 simpledb.execution.JoinPredicate
 simpledb.execution.Predicate$Op
 simpledb.transaction.TransactionAbortedException
+simpledb.transaction.TransactionAbortedException
+simpledb.execution.Predicate$Op
 ||:simpledb.storage.Field
 java.lang.Object
 java.io.IOException
@@ -456,12 +508,19 @@ java.lang.Exception
 simpledb.storage.BufferPool
 simpledb.systemtest.SystemTestUtil
 simpledb.transaction.TransactionId
+java.lang.Exception
+simpledb.storage.DbFileIterator
+simpledb.storage.BufferPool
+simpledb.transaction.TransactionId
+simpledb.systemtest.SystemTestUtil
 simpledb.HeapFileReadTest
 simpledb.storage.HeapPageId
 simpledb.storage.HeapFile
 simpledb.common.Database
 org.junit.Assert
 java.util.NoSuchElementException
+java.util.NoSuchElementException
+org.junit.Assert
 simpledb.storage.HeapPage
 ||:simpledb.common.Catalog
 java.lang.IndexOutOfBoundsException
@@ -534,6 +593,10 @@ org.junit.Assert
 simpledb.execution.SeqScan
 java.util.Collections
 simpledb.transaction.TransactionAbortedException
+simpledb.execution.SeqScan
+org.junit.Assert
+simpledb.transaction.TransactionAbortedException
+java.util.Collections
 simpledb.systemtest.AbortEvictionTest
 ||:simpledb.optimizer.LogicalJoinNode
 simpledb.optimizer.LogicalJoinNode
@@ -573,6 +636,76 @@ simpledb.common.Database
 java.util.LinkedList
 simpledb.systemtest.SimpleDbTestBase
 simpledb.TestUtil
+simpledb.index.BTreeLeafPage
+simpledb.common.DbException
+java.util.Iterator
+simpledb.common.Type
+simpledb.storage.Tuple
+[[I
+java.io.IOException
+java.lang.RuntimeException
+java.lang.Exception
+java.util.List
+simpledb.systemtest.SystemTestUtil
+simpledb.common.Catalog
+simpledb.storage.RecordId
+org.junit.Assert
+simpledb.index.BTreeFileEncoder
+||:simpledb.TransactionTest
+simpledb.TestUtil
+java.util.Iterator
+simpledb.storage.Tuple
+junit.framework.JUnit4TestAdapter
+simpledb.storage.IntField
+simpledb.TransactionTest
+simpledb.common.Utility
+java.lang.Exception
+simpledb.storage.Page
+simpledb.storage.BufferPool
+simpledb.transaction.TransactionId
+simpledb.storage.HeapPageId
+simpledb.storage.RecordId
+simpledb.storage.HeapFile
+simpledb.common.Database
+simpledb.common.Permissions
+java.lang.Boolean
+org.junit.Assert
+simpledb.TestUtil$CreateHeapFile
+simpledb.storage.HeapPage
+||:simpledb.InsertTest
+simpledb.TestUtil
+simpledb.transaction.TransactionId
+simpledb.execution.Insert
+junit.framework.JUnit4TestAdapter
+simpledb.storage.HeapFile
+simpledb.InsertTest
+org.junit.Assert
+simpledb.TestUtil$CreateHeapFile
+simpledb.common.Utility
+java.lang.Exception
+||:simpledb.HeapPageWriteTest
+simpledb.systemtest.SimpleDbTestBase
+simpledb.TestUtil
+simpledb.TestUtil$SkeletonFile
+simpledb.common.DbException
+java.util.Iterator
+simpledb.storage.Tuple
+junit.framework.JUnit4TestAdapter
+simpledb.HeapPageWriteTest
+simpledb.common.Utility
+java.lang.Exception
+simpledb.HeapPageReadTest
+simpledb.transaction.TransactionId
+simpledb.systemtest.SystemTestUtil
+simpledb.storage.HeapPageId
+simpledb.common.Catalog
+simpledb.storage.RecordId
+simpledb.common.Database
+java.util.LinkedList
+org.junit.Assert
+simpledb.storage.HeapPage
+||:simpledb.index.BTreeLeafPageReverseIterator
+java.lang.UnsupportedOperationException
 simpledb.index.BTreeLeafPage
 simpledb.common.DbException
 java.util.Iterator
@@ -703,6 +836,29 @@ simpledb.storage.Tuple
 java.lang.Object
 simpledb.storage.Field
 java.util.Comparator
+simpledb.execution.OpIterator
+simpledb.storage.Tuple
+java.lang.Object
+java.lang.IllegalArgumentException
+simpledb.storage.TupleDesc
+java.lang.Iterable
+||:simpledb.TupleTest
+simpledb.systemtest.SimpleDbTestBase
+java.lang.UnsupportedOperationException
+simpledb.TupleTest
+simpledb.storage.HeapPageId
+simpledb.storage.Tuple
+simpledb.storage.RecordId
+junit.framework.JUnit4TestAdapter
+simpledb.storage.IntField
+org.junit.Assert
+simpledb.common.Utility
+||:simpledb.index.BTreeFileEncoder$TupleComparator
+simpledb.index.BTreeFileEncoder$TupleComparator
+simpledb.storage.Tuple
+java.lang.Object
+java.util.Comparator
+simpledb.storage.Field
 simpledb.execution.Predicate$Op
 simpledb.index.BTreeFileEncoder
 simpledb.execution.Predicate
@@ -715,6 +871,8 @@ simpledb.TestUtil$MockScan
 org.junit.Assert
 simpledb.execution.Predicate$Op
 simpledb.execution.Filter
+simpledb.execution.Filter
+simpledb.execution.Predicate$Op
 simpledb.common.Utility
 java.lang.Exception
 simpledb.execution.Predicate
@@ -723,6 +881,8 @@ simpledb.systemtest.SimpleDbTestBase
 simpledb.index.BTreeLeafPage
 java.util.Iterator
 simpledb.index.BTreePage
+simpledb.index.BTreePage
+java.util.Iterator
 simpledb.index.BTreeEntry
 simpledb.storage.Tuple
 junit.framework.JUnit4TestAdapter
@@ -735,6 +895,12 @@ simpledb.index.BTreePageId
 java.lang.Exception
 simpledb.storage.BufferPool
 simpledb.index.BTreeFile
+simpledb.index.BTreePageId
+simpledb.storage.DbFileIterator
+java.lang.Exception
+java.io.File
+simpledb.index.BTreeFile
+simpledb.storage.BufferPool
 simpledb.execution.Predicate
 simpledb.transaction.TransactionId
 simpledb.index.BTreeInternalPage
@@ -794,6 +960,9 @@ simpledb.storage.IntField
 simpledb.common.Utility
 java.lang.Integer
 simpledb.storage.TupleDesc
+java.lang.Integer
+simpledb.storage.TupleDesc
+simpledb.common.Utility
 java.util.ArrayList
 simpledb.storage.TupleIterator
 simpledb.execution.OpIterator
@@ -822,6 +991,10 @@ simpledb.transaction.TransactionAbortedException
 simpledb.TestUtil$CreateHeapFile
 java.io.InputStream
 [Lsimpledb.common.Type;
+simpledb.TestUtil$CreateHeapFile
+simpledb.transaction.TransactionAbortedException
+[Lsimpledb.common.Type;
+java.io.InputStream
 ||:simpledb.storage.PageId
 simpledb.storage.PageId
 java.lang.Object
@@ -910,6 +1083,8 @@ simpledb.execution.JoinPredicate
 org.junit.Assert
 simpledb.execution.Predicate$Op
 simpledb.execution.Join
+simpledb.execution.Join
+simpledb.execution.Predicate$Op
 simpledb.common.Utility
 java.lang.Exception
 simpledb.execution.Predicate
@@ -1060,6 +1235,44 @@ java.util.NoSuchElementException
 ||:simpledb.execution.Insert
 simpledb.common.DbException
 simpledb.execution.Insert
+||:simpledb.TestUtil$SkeletonFile
+simpledb.TestUtil
+simpledb.TestUtil$SkeletonFile
+simpledb.storage.DbFile
+java.lang.Object
+java.lang.RuntimeException
+java.util.NoSuchElementException
+||:simpledb.systemtest.LogTest
+java.util.Arrays
+simpledb.systemtest.LogTest
+simpledb.execution.Insert
+junit.framework.JUnit4TestAdapter
+simpledb.storage.IntField
+simpledb.common.Utility
+simpledb.storage.Page
+simpledb.transaction.Transaction
+simpledb.storage.BufferPool
+simpledb.storage.TupleIterator
+simpledb.common.Database
+simpledb.common.Permissions
+simpledb.storage.LogFile
+simpledb.storage.HeapPage
+simpledb.systemtest.SimpleDbTestBase
+simpledb.common.DbException
+simpledb.storage.Tuple
+java.io.IOException
+java.lang.RuntimeException
+java.io.File
+simpledb.systemtest.SystemTestUtil
+simpledb.storage.HeapPageId
+simpledb.storage.HeapFile
+simpledb.execution.SeqScan
+org.junit.Assert
+simpledb.transaction.TransactionAbortedException
+java.util.Collections
+||:simpledb.execution.Insert
+simpledb.common.DbException
+simpledb.execution.Insert
 simpledb.execution.Operator
 simpledb.transaction.TransactionAbortedException
 ||:simpledb.systemtest.TransactionTest$XactionTester
@@ -1077,8 +1290,13 @@ simpledb.transaction.Transaction
 simpledb.execution.Query
 java.util.HashSet
 simpledb.storage.TupleIterator
+<<<<<<< Updated upstream
 simpledb.systemtest.SystemTestUtil
 java.lang.InterruptedException
+=======
+java.lang.InterruptedException
+simpledb.systemtest.SystemTestUtil
+>>>>>>> Stashed changes
 java.lang.Thread
 simpledb.execution.SeqScan
 simpledb.transaction.TransactionAbortedException
@@ -1180,6 +1398,9 @@ simpledb.AggregateTest
 java.lang.Integer
 simpledb.common.Utility
 simpledb.storage.TupleDesc
+simpledb.storage.TupleDesc
+java.lang.Integer
+simpledb.common.Utility
 java.lang.Exception
 simpledb.execution.Aggregator$Op
 simpledb.execution.OpIterator
@@ -1253,8 +1474,13 @@ simpledb.storage.BufferPool
 simpledb.execution.Delete
 simpledb.systemtest.FilterBase
 simpledb.common.DbException
+<<<<<<< Updated upstream
 simpledb.storage.Tuple
 junit.framework.JUnit4TestAdapter
+=======
+junit.framework.JUnit4TestAdapter
+simpledb.storage.Tuple
+>>>>>>> Stashed changes
 simpledb.storage.IntField
 java.io.IOException
 java.lang.AssertionError
@@ -1263,8 +1489,13 @@ simpledb.systemtest.DeleteTest
 java.util.ArrayList
 simpledb.execution.Predicate
 java.util.List
+<<<<<<< Updated upstream
 simpledb.systemtest.SystemTestUtil
 simpledb.transaction.TransactionId
+=======
+simpledb.transaction.TransactionId
+simpledb.systemtest.SystemTestUtil
+>>>>>>> Stashed changes
 simpledb.storage.HeapFile
 java.lang.Class
 simpledb.execution.SeqScan
@@ -1330,6 +1561,21 @@ java.lang.Thread
 simpledb.common.Database
 java.lang.Object
 simpledb.transaction.TransactionAbortedException
+<<<<<<< Updated upstream
+=======
+||:simpledb.BufferPoolWriteTest$HeapFileDuplicates
+simpledb.BufferPoolWriteTest$HeapFileDuplicates
+java.util.List
+simpledb.common.DbException
+simpledb.storage.HeapPageId
+simpledb.BufferPoolWriteTest
+simpledb.storage.HeapFile
+java.io.FileOutputStream
+java.io.IOException
+java.util.ArrayList
+java.io.BufferedOutputStream
+simpledb.storage.HeapPage
+>>>>>>> Stashed changes
 ||:simpledb.BTreeRootPtrPageTest
 simpledb.systemtest.SimpleDbTestBase
 simpledb.TestUtil
@@ -1343,12 +1589,18 @@ simpledb.common.Utility
 simpledb.index.BTreePageId
 java.lang.Exception
 simpledb.BTreeRootPtrPageTest
+<<<<<<< Updated upstream
 simpledb.systemtest.SystemTestUtil
 simpledb.transaction.TransactionId
+=======
+simpledb.transaction.TransactionId
+simpledb.systemtest.SystemTestUtil
+>>>>>>> Stashed changes
 simpledb.common.Catalog
 simpledb.common.Database
 org.junit.Assert
 simpledb.index.BTreeFileEncoder
+<<<<<<< Updated upstream
 ||:simpledb.BufferPoolWriteTest$HeapFileDuplicates
 simpledb.BufferPoolWriteTest$HeapFileDuplicates
 java.util.List
@@ -1361,6 +1613,8 @@ java.io.IOException
 java.util.ArrayList
 java.io.BufferedOutputStream
 simpledb.storage.HeapPage
+=======
+>>>>>>> Stashed changes
 ||:simpledb.optimizer.QueryPlanVisualizer$SubTreeDescriptor
 simpledb.optimizer.QueryPlanVisualizer
 simpledb.optimizer.QueryPlanVisualizer$SubTreeDescriptor
@@ -1371,15 +1625,25 @@ java.lang.invoke.MethodHandles$Lookup
 simpledb.common.Type
 junit.framework.JUnit4TestAdapter
 java.lang.invoke.MethodHandles
+<<<<<<< Updated upstream
 simpledb.common.Utility
 simpledb.storage.TupleDesc
+=======
+simpledb.storage.TupleDesc
+simpledb.common.Utility
+>>>>>>> Stashed changes
 [I
 simpledb.TupleDescTest
 java.lang.Object
 java.lang.String
 java.lang.invoke.StringConcatFactory
+<<<<<<< Updated upstream
 org.junit.Assert
 java.util.NoSuchElementException
+=======
+java.util.NoSuchElementException
+org.junit.Assert
+>>>>>>> Stashed changes
 ||:simpledb.common.Database
 java.lang.IllegalAccessException
 java.lang.System
@@ -1396,12 +1660,20 @@ simpledb.common.Database
 java.lang.Object
 simpledb.storage.LogFile
 java.lang.Class
+<<<<<<< Updated upstream
 java.lang.SecurityException
 ||:simpledb.systemtest.FilterTest
 simpledb.systemtest.FilterBase
 simpledb.common.DbException
 simpledb.storage.HeapFile
 junit.framework.JUnit4TestAdapter
+=======
+||:simpledb.systemtest.FilterTest
+simpledb.systemtest.FilterBase
+simpledb.common.DbException
+junit.framework.JUnit4TestAdapter
+simpledb.storage.HeapFile
+>>>>>>> Stashed changes
 simpledb.systemtest.FilterTest
 simpledb.execution.SeqScan
 org.junit.Assert
@@ -1702,10 +1974,27 @@ simpledb.execution.Aggregator
 java.lang.Math
 java.lang.Object
 java.lang.String
+<<<<<<< Updated upstream
 java.lang.invoke.StringConcatFactory
 ||:simpledb.JoinOptimizerTest
 simpledb.optimizer.LogicalJoinNode
 java.lang.Double
+=======
+simpledb.execution.Operator
+simpledb.execution.SeqScan
+simpledb.execution.JoinPredicate
+simpledb.execution.Aggregate
+simpledb.execution.Predicate$Op
+simpledb.optimizer.OperatorCardinality
+||:simpledb.systemtest.SimpleDbTestBase
+simpledb.systemtest.SimpleDbTestBase
+simpledb.common.Database
+java.lang.Object
+java.lang.Exception
+||:simpledb.optimizer.LogicalPlan
+simpledb.optimizer.LogicalFilterNode
+simpledb.optimizer.TableStats
+>>>>>>> Stashed changes
 java.lang.System
 simpledb.optimizer.TableStats
 [D
@@ -1759,7 +2048,264 @@ simpledb.systemtest.SimpleDbTestBase
 java.util.Map$Entry
 java.lang.invoke.MethodHandles$Lookup
 java.util.Iterator
+<<<<<<< Updated upstream
+=======
+simpledb.common.Type
+java.lang.RuntimeException
+java.lang.IllegalArgumentException
+java.io.File
+simpledb.storage.HeapFile
+simpledb.execution.Aggregator
+simpledb.optimizer.JoinOptimizer
+simpledb.execution.Project
+java.lang.Object
+simpledb.execution.SeqScan
+[Lsimpledb.common.Type;
+||:simpledb.PredicateTest
+simpledb.systemtest.SimpleDbTestBase
+simpledb.TestUtil
+simpledb.PredicateTest
+junit.framework.JUnit4TestAdapter
+org.junit.Assert
+simpledb.execution.Predicate$Op
+simpledb.common.Utility
+[I
+simpledb.execution.Predicate
+||:simpledb.BTreeNextKeyLockingTest
+simpledb.systemtest.SimpleDbTestBase
+simpledb.BTreeNextKeyLockingTest
+java.util.Iterator
+simpledb.index.BTreeEntry
+junit.framework.JUnit4TestAdapter
+simpledb.storage.IntField
+simpledb.index.BTreeUtility
+simpledb.index.BTreeRootPtrPage
+simpledb.storage.Field
+simpledb.index.BTreePageId
+simpledb.storage.DbFileIterator
+java.lang.Exception
+simpledb.index.BTreeFile
+simpledb.storage.BufferPool
+simpledb.execution.Predicate
+simpledb.transaction.TransactionId
+simpledb.execution.IndexPredicate
+simpledb.index.BTreeInternalPage
+java.lang.Thread
+simpledb.common.Database
+simpledb.common.Permissions
+org.junit.Assert
+simpledb.index.BTreeUtility$BTreeWriter
+simpledb.execution.Predicate$Op
+||:simpledb.common.DbException
 simpledb.common.DbException
+java.lang.Exception
+||:simpledb.optimizer.LogicalScanNode
+simpledb.optimizer.LogicalScanNode
+java.lang.Object
+||:simpledb.index.BTreeChecker
+simpledb.index.BTreeLeafPage
+simpledb.index.BTreePage
+simpledb.index.BTreeChecker$SubtreeSummary
+>>>>>>> Stashed changes
+simpledb.common.DbException
+java.lang.invoke.MethodHandles
+java.util.Set
+java.io.IOException
+java.lang.IllegalArgumentException
+java.lang.AssertionError
+simpledb.storage.Field
+simpledb.index.BTreePageId
+simpledb.index.BTreeFile
+simpledb.transaction.TransactionId
+simpledb.index.BTreeInternalPage
+java.util.Map
+simpledb.common.Permissions
+java.lang.Object
+java.lang.Class
+simpledb.transaction.TransactionAbortedException
+||:simpledb.systemtest.EvictionTest
+simpledb.systemtest.SimpleDbTestBase
+java.io.PrintStream
+java.lang.invoke.MethodHandles$Lookup
+simpledb.common.DbException
+simpledb.execution.Insert
+java.lang.System
+simpledb.storage.Tuple
+junit.framework.JUnit4TestAdapter
+java.lang.invoke.MethodHandles
+simpledb.storage.IntField
+java.io.IOException
+simpledb.systemtest.EvictionTest
+simpledb.common.Utility
+simpledb.transaction.Transaction
+simpledb.storage.TupleIterator
+simpledb.transaction.TransactionId
+simpledb.systemtest.SystemTestUtil
+simpledb.storage.HeapFile
+simpledb.common.Database
+java.lang.invoke.StringConcatFactory
+simpledb.execution.SeqScan
+org.junit.Assert
+simpledb.transaction.TransactionAbortedException
+java.util.Collections
+||:simpledb.BTreeDeadlockTest
+java.lang.System
+junit.framework.JUnit4TestAdapter
+simpledb.index.BTreeUtility
+simpledb.storage.IntField
+simpledb.index.BTreeRootPtrPage
+java.util.Random
+simpledb.storage.BufferPool
+java.util.ArrayList
+simpledb.execution.Predicate
+simpledb.transaction.TransactionId
+java.lang.Thread
+simpledb.common.Database
+simpledb.common.Permissions
+simpledb.execution.Predicate$Op
+simpledb.systemtest.SimpleDbTestBase
+java.io.PrintStream
+java.util.Iterator
+simpledb.storage.Tuple
+simpledb.BTreeDeadlockTest
+simpledb.storage.DbFileIterator
+java.lang.Exception
+simpledb.index.BTreeFile
+java.util.List
+simpledb.execution.IndexPredicate
+simpledb.index.BTreeUtility$BTreeWriter
+||:simpledb.execution.Filter
+simpledb.common.DbException
+simpledb.execution.Operator
+java.util.NoSuchElementException
+simpledb.execution.Filter
+simpledb.transaction.TransactionAbortedException
+||:simpledb.index.BTreeInternalPageIterator
+java.lang.UnsupportedOperationException
+java.util.Iterator
+simpledb.index.BTreeEntry
+simpledb.index.BTreeInternalPage
+simpledb.storage.RecordId
+java.lang.Object
+java.util.NoSuchElementException
+simpledb.index.BTreeInternalPageIterator
+||:simpledb.HeapPageReadTest
+simpledb.TestUtil$SkeletonFile
+junit.framework.JUnit4TestAdapter
+simpledb.storage.IntField
+simpledb.common.Utility
+java.lang.Integer
+[I
+java.util.ArrayList
+simpledb.storage.BufferPool
+simpledb.common.Database
+simpledb.storage.HeapPage
+simpledb.systemtest.SimpleDbTestBase
+simpledb.TestUtil
+java.util.Iterator
+simpledb.storage.Tuple
+[[I
+java.io.IOException
+java.lang.RuntimeException
+java.lang.Exception
+java.io.File
+simpledb.HeapPageReadTest
+java.util.List
+simpledb.storage.HeapFileEncoder
+simpledb.systemtest.SystemTestUtil
+simpledb.storage.HeapPageId
+simpledb.common.Catalog
+org.junit.Assert
+||:simpledb.BTreePageIdTest
+simpledb.systemtest.SimpleDbTestBase
+simpledb.BTreePageIdTest
+junit.framework.JUnit4TestAdapter
+java.lang.Object
+org.junit.Assert
+simpledb.index.BTreePageId
+||:simpledb.LockingTest
+simpledb.TestUtil
+simpledb.TestUtil$LockGrabber
+junit.framework.JUnit4TestAdapter
+simpledb.common.Utility
+java.lang.Exception
+simpledb.storage.Page
+simpledb.storage.BufferPool
+simpledb.transaction.TransactionId
+simpledb.LockingTest
+simpledb.storage.HeapPageId
+simpledb.storage.HeapFile
+java.lang.Thread
+simpledb.common.Database
+simpledb.common.Permissions
+java.lang.Boolean
+org.junit.Assert
+simpledb.TestUtil$CreateHeapFile
+||:simpledb.execution.IntegerAggregator
+simpledb.execution.Aggregator$Op
+java.util.List
+simpledb.systemtest.SystemTestUtil
+simpledb.execution.Aggregator
+<<<<<<< Updated upstream
+=======
+java.lang.Object
+||:simpledb.JoinOptimizerTest
+simpledb.optimizer.LogicalJoinNode
+java.lang.Double
+simpledb.optimizer.TableStats
+java.lang.System
+[D
+java.util.HashMap
+java.lang.Integer
+simpledb.common.Utility
+[I
+java.util.ArrayList
+simpledb.storage.BufferPool
+simpledb.execution.Predicate
+simpledb.ParsingException
+simpledb.transaction.TransactionId
+java.util.Map
+simpledb.common.Database
+java.lang.Boolean
+java.lang.String
+simpledb.execution.Predicate$Op
+simpledb.systemtest.SimpleDbTestBase
+java.io.PrintStream
+simpledb.Parser
+java.lang.invoke.MethodHandles$Lookup
+java.lang.invoke.MethodHandles
+java.io.IOException
+java.lang.Exception
+java.io.File
+java.util.List
+[Ljava.lang.Object;
+simpledb.storage.HeapFileEncoder
+simpledb.systemtest.SystemTestUtil
+simpledb.storage.HeapFile
+simpledb.common.Catalog
+simpledb.optimizer.JoinOptimizer
+java.lang.invoke.StringConcatFactory
+simpledb.JoinOptimizerTest
+org.junit.Assert
+java.util.Collections
+||:simpledb.systemtest.AggregateTest
+junit.framework.JUnit4TestAdapter
+java.util.HashMap
+java.lang.Integer
+java.util.ArrayList
+simpledb.storage.BufferPool
+simpledb.transaction.TransactionId
+simpledb.storage.DbFile
+simpledb.systemtest.AggregateTest$1
+java.util.Map
+simpledb.common.Database
+java.lang.String
+simpledb.execution.Aggregate
+simpledb.systemtest.SimpleDbTestBase
+java.util.Map$Entry
+java.lang.invoke.MethodHandles$Lookup
+simpledb.common.DbException
+java.util.Iterator
 java.lang.invoke.MethodHandles
 java.util.Set
 java.io.IOException
@@ -1768,6 +2314,7 @@ simpledb.execution.Aggregator$Op
 java.util.List
 simpledb.systemtest.SystemTestUtil
 simpledb.execution.Aggregator
+>>>>>>> Stashed changes
 java.lang.invoke.StringConcatFactory
 simpledb.execution.SeqScan
 simpledb.systemtest.AggregateTest
@@ -1804,8 +2351,13 @@ java.lang.System
 junit.framework.JUnit4TestAdapter
 java.util.Random
 simpledb.common.Utility
+<<<<<<< Updated upstream
 simpledb.storage.Page
 java.lang.Exception
+=======
+java.lang.Exception
+simpledb.storage.Page
+>>>>>>> Stashed changes
 simpledb.storage.BufferPool
 simpledb.transaction.TransactionId
 simpledb.storage.HeapPageId
@@ -1819,8 +2371,13 @@ simpledb.TestUtil$CreateHeapFile
 simpledb.systemtest.ScanTest
 junit.framework.JUnit4TestAdapter
 java.util.Random
+<<<<<<< Updated upstream
 simpledb.common.Utility
 simpledb.storage.TupleDesc
+=======
+simpledb.storage.TupleDesc
+simpledb.common.Utility
+>>>>>>> Stashed changes
 [I
 java.util.ArrayList
 simpledb.storage.BufferPool
@@ -1890,12 +2447,15 @@ simpledb.storage.TupleDesc$TDItem
 simpledb.storage.TupleDesc
 [Ljava.lang.String;
 java.io.Serializable
+<<<<<<< Updated upstream
 java.util.List
 java.lang.Object
 java.lang.StringBuilder
 java.lang.String
 java.util.NoSuchElementException
 [Lsimpledb.common.Type;
+=======
+>>>>>>> Stashed changes
 ||:simpledb.IntHistogramTest
 simpledb.IntHistogramTest
 java.lang.Object
@@ -1932,8 +2492,13 @@ simpledb.transaction.TransactionId
 java.lang.Object
 java.io.Serializable
 ||:simpledb.systemtest.AggregateTest$1
+<<<<<<< Updated upstream
 simpledb.execution.Aggregator$Op
 java.lang.NoSuchFieldError
+=======
+java.lang.NoSuchFieldError
+simpledb.execution.Aggregator$Op
+>>>>>>> Stashed changes
 simpledb.systemtest.AggregateTest$1
 simpledb.execution.Aggregator
 java.lang.Object
@@ -2008,8 +2573,13 @@ simpledb.storage.DbFile
 simpledb.common.Catalog
 simpledb.common.Database
 simpledb.CatalogTest
+<<<<<<< Updated upstream
 org.junit.Assert
 java.util.NoSuchElementException
+=======
+java.util.NoSuchElementException
+org.junit.Assert
+>>>>>>> Stashed changes
 ||:simpledb.execution.Operator
 java.lang.IllegalStateException
 simpledb.common.DbException
@@ -2051,10 +2621,17 @@ simpledb.storage.IntField
 java.util.HashMap
 java.lang.AssertionError
 java.lang.Integer
+<<<<<<< Updated upstream
 simpledb.storage.BufferPool
 simpledb.transaction.Transaction
 simpledb.storage.DbFile
 simpledb.transaction.TransactionId
+=======
+simpledb.transaction.Transaction
+simpledb.storage.BufferPool
+simpledb.transaction.TransactionId
+simpledb.storage.DbFile
+>>>>>>> Stashed changes
 java.util.Map
 simpledb.common.Database
 simpledb.systemtest.TransactionTest
@@ -2066,8 +2643,13 @@ java.lang.RuntimeException
 simpledb.storage.DbFileIterator
 [Lsimpledb.systemtest.TransactionTest$XactionTester;
 simpledb.systemtest.TransactionTest$ModifiableCyclicBarrier$UpdateLatch
+<<<<<<< Updated upstream
 simpledb.systemtest.SystemTestUtil
 java.lang.InterruptedException
+=======
+java.lang.InterruptedException
+simpledb.systemtest.SystemTestUtil
+>>>>>>> Stashed changes
 simpledb.storage.HeapFile
 java.lang.Class
 org.junit.Assert
@@ -2181,9 +2763,15 @@ simpledb.optimizer.TableStats
 java.io.IOException
 simpledb.common.Utility
 java.io.File
+<<<<<<< Updated upstream
 simpledb.storage.BufferPool
 java.util.ArrayList
 simpledb.transaction.Transaction
+=======
+java.util.ArrayList
+simpledb.transaction.Transaction
+simpledb.storage.BufferPool
+>>>>>>> Stashed changes
 simpledb.storage.HeapFileEncoder
 simpledb.systemtest.SystemTestUtil
 simpledb.common.Catalog
@@ -2212,8 +2800,13 @@ simpledb.common.Utility
 simpledb.index.BTreePageId
 java.lang.Exception
 simpledb.index.BTreeHeaderPage
+<<<<<<< Updated upstream
 simpledb.systemtest.SystemTestUtil
 simpledb.transaction.TransactionId
+=======
+simpledb.transaction.TransactionId
+simpledb.systemtest.SystemTestUtil
+>>>>>>> Stashed changes
 simpledb.common.Catalog
 simpledb.common.Database
 org.junit.Assert
@@ -2348,8 +2941,13 @@ java.util.Arrays
 junit.framework.JUnit4TestAdapter
 [B
 simpledb.common.Utility
+<<<<<<< Updated upstream
 simpledb.storage.DbFileIterator
 java.lang.Exception
+=======
+java.lang.Exception
+simpledb.storage.DbFileIterator
+>>>>>>> Stashed changes
 simpledb.storage.BufferPool
 simpledb.HeapFileWriteTest
 simpledb.transaction.TransactionId
@@ -2386,8 +2984,13 @@ simpledb.transaction.TransactionAbortedException
 simpledb.systemtest.SimpleDbTestBase
 simpledb.common.DbException
 simpledb.execution.Insert
+<<<<<<< Updated upstream
 simpledb.storage.Tuple
 junit.framework.JUnit4TestAdapter
+=======
+junit.framework.JUnit4TestAdapter
+simpledb.storage.Tuple
+>>>>>>> Stashed changes
 simpledb.storage.IntField
 java.io.IOException
 java.lang.AssertionError
@@ -2395,8 +2998,13 @@ java.util.ArrayList
 simpledb.storage.BufferPool
 simpledb.systemtest.InsertTest
 java.util.List
+<<<<<<< Updated upstream
 simpledb.systemtest.SystemTestUtil
 simpledb.transaction.TransactionId
+=======
+simpledb.transaction.TransactionId
+simpledb.systemtest.SystemTestUtil
+>>>>>>> Stashed changes
 simpledb.storage.HeapFile
 simpledb.common.Database
 java.lang.Class
@@ -2420,12 +3028,21 @@ simpledb.storage.StringField
 java.text.ParseException
 ||:simpledb.systemtest.BTreeScanTest
 junit.framework.JUnit4TestAdapter
+<<<<<<< Updated upstream
 simpledb.index.BTreeUtility
 simpledb.storage.IntField
 java.util.Random
 java.lang.Integer
 simpledb.common.Utility
 simpledb.storage.TupleDesc
+=======
+simpledb.storage.IntField
+simpledb.index.BTreeUtility
+java.util.Random
+java.lang.Integer
+simpledb.storage.TupleDesc
+simpledb.common.Utility
+>>>>>>> Stashed changes
 [I
 java.util.ArrayList
 simpledb.storage.BufferPool
@@ -2433,18 +3050,30 @@ simpledb.execution.Predicate
 simpledb.transaction.TransactionId
 simpledb.common.Database
 simpledb.execution.Predicate$Op
+<<<<<<< Updated upstream
 simpledb.systemtest.SimpleDbTestBase
 simpledb.systemtest.BTreeScanTest$TupleComparator
 java.util.Iterator
 simpledb.common.DbException
+=======
+simpledb.systemtest.BTreeScanTest$TupleComparator
+simpledb.systemtest.SimpleDbTestBase
+simpledb.common.DbException
+java.util.Iterator
+>>>>>>> Stashed changes
 java.io.IOException
 java.lang.Exception
 simpledb.index.BTreeFile
 simpledb.index.BTreeScan
 java.util.List
 simpledb.systemtest.BTreeScanTest
+<<<<<<< Updated upstream
 simpledb.systemtest.SystemTestUtil
 simpledb.execution.IndexPredicate
+=======
+simpledb.execution.IndexPredicate
+simpledb.systemtest.SystemTestUtil
+>>>>>>> Stashed changes
 simpledb.common.Catalog
 simpledb.systemtest.BTreeScanTest$InstrumentedBTreeFile
 org.junit.Assert
@@ -2462,6 +3091,7 @@ java.lang.System
 simpledb.storage.IntField
 [D
 java.util.Random
+<<<<<<< Updated upstream
 simpledb.common.Utility
 java.lang.Integer
 simpledb.storage.TupleDesc
@@ -2478,6 +3108,24 @@ java.lang.String
 java.lang.invoke.MethodHandles$Lookup
 java.util.Iterator
 simpledb.common.DbException
+=======
+java.lang.Integer
+simpledb.storage.TupleDesc
+simpledb.common.Utility
+java.util.ArrayList
+simpledb.storage.BufferPool
+simpledb.transaction.TransactionId
+simpledb.execution.OpIterator
+simpledb.storage.DbFile
+java.util.Map
+simpledb.common.Database
+java.lang.Boolean
+java.lang.Math
+java.lang.String
+java.lang.invoke.MethodHandles$Lookup
+simpledb.common.DbException
+java.util.Iterator
+>>>>>>> Stashed changes
 simpledb.common.Type
 simpledb.storage.Tuple
 java.lang.Runtime
@@ -2509,10 +3157,17 @@ simpledb.TestUtil
 simpledb.storage.Tuple
 junit.framework.JUnit4TestAdapter
 simpledb.common.Utility
+<<<<<<< Updated upstream
 simpledb.storage.DbFileIterator
 java.lang.Exception
 simpledb.storage.BufferPool
 java.util.ArrayList
+=======
+java.lang.Exception
+simpledb.storage.DbFileIterator
+java.util.ArrayList
+simpledb.storage.BufferPool
+>>>>>>> Stashed changes
 simpledb.BufferPoolWriteTest$HeapFileDuplicates
 java.util.List
 simpledb.transaction.TransactionId
@@ -2534,8 +3189,13 @@ java.io.Serializable
 ||:simpledb.systemtest.BTreeFileInsertTest
 simpledb.index.BTreeEntry
 junit.framework.JUnit4TestAdapter
+<<<<<<< Updated upstream
 simpledb.index.BTreeUtility
 simpledb.storage.IntField
+=======
+simpledb.storage.IntField
+simpledb.index.BTreeUtility
+>>>>>>> Stashed changes
 simpledb.index.BTreeRootPtrPage
 java.util.HashMap
 java.util.Random
@@ -2654,7 +3314,10 @@ java.lang.invoke.StringConcatFactory
 simpledb.execution.SeqScan
 java.util.NoSuchElementException
 simpledb.transaction.TransactionAbortedException
+<<<<<<< Updated upstream
 [Lsimpledb.common.Type;
+=======
+>>>>>>> Stashed changes
 ||:simpledb.IntegerAggregatorTest
 simpledb.systemtest.SimpleDbTestBase
 simpledb.TestUtil
@@ -2670,12 +3333,15 @@ simpledb.execution.Aggregator
 simpledb.IntegerAggregatorTest
 java.util.NoSuchElementException
 org.junit.Assert
+<<<<<<< Updated upstream
 ||:simpledb.execution.Predicate$1
 java.lang.NoSuchFieldError
 java.lang.Object
 simpledb.execution.Predicate$1
 simpledb.execution.Predicate$Op
 simpledb.execution.Predicate
+=======
+>>>>>>> Stashed changes
 ||:simpledb.index.BTreeUtility$BTreeWriter
 java.lang.Throwable
 simpledb.storage.Tuple
@@ -2694,6 +3360,7 @@ simpledb.execution.Predicate$Op
 ||:simpledb.TestUtil$CreateHeapFile
 simpledb.TestUtil
 simpledb.common.Database
+<<<<<<< Updated upstream
 java.lang.Object
 java.io.IOException
 java.lang.RuntimeException
@@ -2701,6 +3368,15 @@ simpledb.TestUtil$CreateHeapFile
 simpledb.common.Utility
 java.io.File
 java.lang.Exception
+=======
+java.io.IOException
+java.lang.Object
+java.lang.RuntimeException
+simpledb.TestUtil$CreateHeapFile
+simpledb.common.Utility
+java.lang.Exception
+java.io.File
+>>>>>>> Stashed changes
 ||:simpledb.HeapPageIdTest
 simpledb.systemtest.SimpleDbTestBase
 simpledb.storage.HeapPageId
