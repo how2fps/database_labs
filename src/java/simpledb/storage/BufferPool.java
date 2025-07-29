@@ -1,10 +1,12 @@
 package simpledb.storage;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import simpledb.common.Database;
 import simpledb.common.DbException;
@@ -23,6 +25,35 @@ import simpledb.transaction.TransactionId;
  * 
  * @Threadsafe, all fields are final
  */
+
+class LockManager {
+       private Map<PageId, Set<TransactionId>> sharedLocks = new HashMap<PageId, Set<TransactionId>>();
+       private Map<PageId, TransactionId> exclusiveLocks = new HashMap<PageId, TransactionId>();
+
+       public synchronized void acquireLock(TransactionId tid, PageId pid, boolean isExclusiveLock) {
+              while (true) {
+                     if (isExclusiveLock) {
+                            if (exclusiveLocks.containsKey(pid)) {
+                                   return;
+                            }
+                            exclusiveLocks.put(pid, tid);
+                     } else {
+                            if (!sharedLocks.containsKey(pid)) {
+                                   sharedLocks.put(pid, new HashSet<>());
+                            }
+                            sharedLocks.get(pid).add(tid);
+                     }
+              }
+       }
+
+       public synchronized void releaseLock(TransactionId tid, PageId pid) {
+              if (tid.equals(exclusiveLocks.get(pid))) {
+                     exclusiveLocks.remove(pid);
+              }
+              if 
+       }
+}
+
 public class BufferPool {
        /** Bytes per page, including header. */
        private static final int DEFAULT_PAGE_SIZE = 4096;
@@ -85,17 +116,19 @@ public class BufferPool {
        private final LinkedHashMap<PageId, Page> pageCache;
 
        public Page getPage(TransactionId tid, PageId pid, Permissions perm)
-                     throws TransactionAbortedException, DbException{synchronized (this){
-                     if (pageCache.containsKey(pid)){
+                     throws TransactionAbortedException, DbException {
+                            lockManager
+              synchronized (this) {
+                     if (pageCache.containsKey(pid)) {
                             return pageCache.get(pid);
                      }
-                     // evict when full
-                     if (pageCache.size() >=maxPages){
+                     
+                     if (pageCache.size() >= maxPages) {
                             evictPage();
                      }
-                     
-                     DbFile f =Database.getCatalog().getDatabaseFile(pid.getTableId());
-                     Page p =f.readPage(pid);
+
+                     DbFile f = Database.getCatalog().getDatabaseFile(pid.getTableId());
+                     Page p = f.readPage(pid);
                      pageCache.put(pid, p);
                      return p;
               }
@@ -215,7 +248,7 @@ public class BufferPool {
         * break simpledb if running in NO STEAL mode.
         */
        public synchronized void flushAllPages() throws IOException {
-              
+
               PageId[] pageIds = pageCache.keySet().toArray(new PageId[pageCache.size()]);
               for (PageId pid : pageIds) {
                      flushPage(pid);
@@ -247,9 +280,9 @@ public class BufferPool {
               // some code goes here
               // not necessary for lab1
 
-              Page page=pageCache.get(pid);
-              if (page!=null && page.isDirty() != null){
-                     DbFile file =Database.getCatalog().getDatabaseFile(pid.getTableId());
+              Page page = pageCache.get(pid);
+              if (page != null && page.isDirty() != null) {
+                     DbFile file = Database.getCatalog().getDatabaseFile(pid.getTableId());
                      file.writePage(page);
                      page.markDirty(false, null);
               }
@@ -271,12 +304,11 @@ public class BufferPool {
               // some code goes here
               // not necessary for lab1
 
-              
-              if (pageCache.isEmpty()){
+              if (pageCache.isEmpty()) {
                      throw new DbException("empty");
               }
-              PageId lruPageId=pageCache.keySet().iterator().next();
-              try{
+              PageId lruPageId = pageCache.keySet().iterator().next();
+              try {
                      flushPage(lruPageId);
                      pageCache.remove(lruPageId);
               } catch (IOException e) {
