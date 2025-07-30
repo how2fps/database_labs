@@ -109,9 +109,14 @@ class LockManager {
               notifyAll();
        }
 
-       // public synchronized boolean holdsLock(TransactionId tid, PageId pid) {
-
-       // }
+       public synchronized boolean holdsLock(TransactionId tid, PageId pid) {
+              Set<PageId> lockedPages = transactionsWithLocks.get(tid);
+              if (lockedPages != null && !lockedPages.isEmpty()
+                            && lockedPages.contains(pid)) {
+                     return true;
+              }
+              return false;
+       }
 
        public synchronized void releaseAllLocks(TransactionId tid) {
               Set<PageId> lockedPages = transactionsWithLocks.get(tid);
@@ -133,7 +138,7 @@ public class BufferPool {
        /**
         * Default number of pages passed to the constructor. This is used by
         * other classes. BufferPool should use the numPages argument to the
-        * constructor instead.
+        * constructor instead.3333
         */
        public static final int DEFAULT_PAGES = 50;
 
@@ -184,10 +189,16 @@ public class BufferPool {
         */
        private final int maxPages;
        private final LinkedHashMap<PageId, Page> pageCache;
+       private final LockManager lockManager = new LockManager();
 
        public Page getPage(TransactionId tid, PageId pid, Permissions perm)
                      throws TransactionAbortedException, DbException {
-
+              if (perm == Permissions.READ_WRITE) {
+                     lockManager.acquireLock(tid, pid, true);
+              }
+              if (perm == Permissions.READ_ONLY) {
+                     lockManager.acquireLock(tid, pid, false);
+              }
               synchronized (this) {
                      if (pageCache.containsKey(pid)) {
                             return pageCache.get(pid);
@@ -214,8 +225,7 @@ public class BufferPool {
         * @param pid the ID of the page to unlock
         */
        public void unsafeReleasePage(TransactionId tid, PageId pid) {
-              // some code goes here
-              // not necessary for lab1|lab2
+              lockManager.releaseLock(tid, pid);
        }
 
        /**
@@ -230,9 +240,7 @@ public class BufferPool {
 
        /** Return true if the specified transaction has a lock on the specified page */
        public boolean holdsLock(TransactionId tid, PageId p) {
-              // some code goes here
-              // not necessary for lab1|lab2
-              return false;
+              return lockManager.holdsLock(tid, p);
        }
 
        /**
