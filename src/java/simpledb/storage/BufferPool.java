@@ -27,21 +27,63 @@ import simpledb.transaction.TransactionId;
  */
 
 class LockManager {
-       private Map<PageId, Set<TransactionId>> sharedLocks = new HashMap<PageId, Set<TransactionId>>();
        private Map<PageId, TransactionId> exclusiveLocks = new HashMap<PageId, TransactionId>();
+       private Map<PageId, Set<TransactionId>> sharedLocks = new HashMap<PageId, Set<TransactionId>>();
+       private Map<TransactionId, Set<PageId>> transactionsWithLocks = new HashMap<TransactionId, Set<PageId>>();
 
-       public synchronized void acquireLock(TransactionId tid, PageId pid, boolean isExclusiveLock) {
+       public synchronized void acquireLock(TransactionId tid, PageId pid, boolean isExclusiveLock)
+                     throws TransactionAbortedException {
               while (true) {
                      if (isExclusiveLock) {
-                            if (exclusiveLocks.containsKey(pid)) {
-                                   return;
+                            if (exclusiveLocks.containsKey(pid) && !exclusiveLocks.get(pid).equals(tid)) {
+                                   try {
+                                          wait();
+                                   } catch (InterruptedException e) {
+                                          throw new TransactionAbortedException();
+                                   }
+                                   continue;
+                            }
+                            if (sharedLocks.containsKey(pid) &&
+                                          !(sharedLocks.get(pid).size() == 1 && sharedLocks.get(pid).contains(tid))) {
+                                   try {
+                                          wait();
+                                   } catch (InterruptedException e) {
+                                          throw new TransactionAbortedException();
+                                   }
+                                   continue;
                             }
                             exclusiveLocks.put(pid, tid);
+                            if (transactionsWithLocks.get(tid) != null) {
+                                   transactionsWithLocks.get(tid).add(pid);
+                                   return;
+                            } else {
+                                   Set<PageId> pageIdSet = new HashSet<>();
+                                   pageIdSet.add(pid);
+                                   transactionsWithLocks.put(tid, pageIdSet);
+                                   return;
+                            }
                      } else {
+                            if (exclusiveLocks.containsKey(pid) && !exclusiveLocks.get(pid).equals(tid)) {
+                                   try {
+                                          wait();
+                                   } catch (InterruptedException e) {
+                                          throw new TransactionAbortedException();
+                                   }
+                                   continue;
+                            }
                             if (!sharedLocks.containsKey(pid)) {
                                    sharedLocks.put(pid, new HashSet<>());
                             }
                             sharedLocks.get(pid).add(tid);
+                            if (transactionsWithLocks.get(tid) != null) {
+                                   transactionsWithLocks.get(tid).add(pid);
+                                   return;
+                            } else {
+                                   Set<PageId> pageIdSet = new HashSet<>();
+                                   pageIdSet.add(pid);
+                                   transactionsWithLocks.put(tid, pageIdSet);
+                                   return;
+                            }
                      }
               }
        }
@@ -50,7 +92,35 @@ class LockManager {
               if (tid.equals(exclusiveLocks.get(pid))) {
                      exclusiveLocks.remove(pid);
               }
-              if 
+              Set<TransactionId> sharedLock = sharedLocks.get(pid);
+              if (sharedLock != null && sharedLock.contains(tid)) {
+                     sharedLock.remove(tid);
+                     if (sharedLock.isEmpty()) {
+                            sharedLocks.remove(pid);
+                     }
+              }
+              Set<PageId> lockedPages = transactionsWithLocks.get(tid);
+              if (lockedPages != null && !lockedPages.isEmpty()) {
+                     lockedPages.remove(pid);
+              }
+              if (lockedPages != null && lockedPages.isEmpty()) {
+                     transactionsWithLocks.remove(tid);
+              }
+              notifyAll();
+       }
+
+       // public synchronized boolean holdsLock(TransactionId tid, PageId pid) {
+
+       // }
+
+       public synchronized void releaseAllLocks(TransactionId tid) {
+              Set<PageId> lockedPages = transactionsWithLocks.get(tid);
+              if (lockedPages != null && !lockedPages.isEmpty()) {
+                     Set<PageId> lockedPagesCopy = new HashSet<>(lockedPages);
+                     for (PageId pid : lockedPagesCopy) {
+                            releaseLock(tid, pid);
+                     }
+              }
        }
 }
 
@@ -117,12 +187,12 @@ public class BufferPool {
 
        public Page getPage(TransactionId tid, PageId pid, Permissions perm)
                      throws TransactionAbortedException, DbException {
-                            lockManager
+
               synchronized (this) {
                      if (pageCache.containsKey(pid)) {
                             return pageCache.get(pid);
                      }
-                     
+
                      if (pageCache.size() >= maxPages) {
                             evictPage();
                      }
