@@ -663,8 +663,8 @@ simpledb.storage.BufferPool$1
 simpledb.storage.Page
 simpledb.storage.BufferPool
 java.util.LinkedHashMap
-simpledb.storage.DbFile
 simpledb.transaction.TransactionId
+simpledb.storage.DbFile
 simpledb.common.Database
 simpledb.common.Permissions
 [Lsimpledb.storage.PageId;

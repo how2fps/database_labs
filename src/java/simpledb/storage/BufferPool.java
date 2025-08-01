@@ -236,6 +236,9 @@ public class BufferPool {
        public void transactionComplete(TransactionId tid) {
               // some code goes here
               // not necessary for lab1|lab2
+              
+              // Always commit when no explicit commit flag is provided
+              transactionComplete(tid, true);
        }
 
        /** Return true if the specified transaction has a lock on the specified page */
@@ -253,6 +256,31 @@ public class BufferPool {
        public void transactionComplete(TransactionId tid, boolean commit) {
               // some code goes here
               // not necessary for lab1|lab2
+              
+              synchronized (this) {
+                     if (commit) {
+                            try {
+                                   PageId[] pageIds=pageCache.keySet().toArray(new PageId[pageCache.size()]);
+                                   for (PageId pid :pageIds) {
+                                          Page page = pageCache.get(pid);
+                                          if (page != null&&tid.equals(page.isDirty())) {
+                                                 flushPage(pid);
+                                          }
+                                   }
+                            } catch (IOException e) {
+                                   System.err.println("Error flushing pages during commit: " + e.getMessage());
+                            }
+                     } else {
+                            PageId[] pageIds =pageCache.keySet().toArray(new PageId[pageCache.size()]);
+                            for (PageId pid :pageIds) {
+                                   Page page = pageCache.get(pid);
+                                   if (page != null && tid.equals(page.isDirty())) {
+                                          pageCache.remove(pid);
+                                   }
+                            }
+                     }
+              }
+              lockManager.releaseAllLocks(tid);
        }
 
        /**
