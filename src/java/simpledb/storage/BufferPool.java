@@ -385,13 +385,21 @@ public class BufferPool {
               if (pageCache.isEmpty()) {
                      throw new DbException("empty");
               }
-              PageId lruPageId = pageCache.keySet().iterator().next();
-              try {
-                     flushPage(lruPageId);
-                     pageCache.remove(lruPageId);
-              } catch (IOException e) {
-                     throw new DbException("error" + e.getMessage());
+              
+              // no steal
+              PageId pageToEvict = null;
+              for (PageId pid : pageCache.keySet()) {
+                     Page page = pageCache.get(pid);
+                     if (page.isDirty()==null) {
+                            pageToEvict = pid;
+                            break;
+                     }
               }
+              if (pageToEvict == null) {
+                     throw new DbException("All pages in buffer pool are dirty, cannot evict any page");
+              }
+              
+              pageCache.remove(pageToEvict);
        }
 
 }
