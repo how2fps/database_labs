@@ -30,60 +30,85 @@ class LockManager {
        private Map<PageId, TransactionId> exclusiveLocks = new HashMap<PageId, TransactionId>();
        private Map<PageId, Set<TransactionId>> sharedLocks = new HashMap<PageId, Set<TransactionId>>();
        private Map<TransactionId, Set<PageId>> transactionsWithLocks = new HashMap<TransactionId, Set<PageId>>();
+       private Map<TransactionId, Set<TransactionId>> waitForGraph = new HashMap<>();
 
        public synchronized void acquireLock(TransactionId tid, PageId pid, boolean isExclusiveLock)
                      throws TransactionAbortedException {
               while (true) {
                      if (isExclusiveLock) {
-                            if (exclusiveLocks.containsKey(pid) && !exclusiveLocks.get(pid).equals(tid)) {
-                                   try {
-                                          wait();
-                                   } catch (InterruptedException e) {
-                                          throw new TransactionAbortedException();
+                            if (exclusiveLocks.containsKey(pid)) {
+                                   TransactionId holder = exclusiveLocks.get(pid);
+                                   if (!holder.equals(tid)) {
+                                          addToWaitForGraph(tid, holder);
+                                          if (hasDeadlock(tid)) {
+                                                 removeFromWaitForGraph(tid);
+                                                 throw new TransactionAbortedException();
+                                          }
+                                          try {
+                                                 wait(10);
+                                          } catch (InterruptedException e) {
+                                                 throw new TransactionAbortedException();
+                                          }
+                                          continue;
                                    }
-                                   continue;
                             }
+                            
                             if (sharedLocks.containsKey(pid) &&
                                           !(sharedLocks.get(pid).size() == 1 && sharedLocks.get(pid).contains(tid))) {
+                                   Set<TransactionId> holders = sharedLocks.get(pid);
+                                   for (TransactionId holder : holders) {
+                                          if (!holder.equals(tid)) {
+                                                 addToWaitForGraph(tid, holder);
+                                          }
+                                   }
+                                   if (hasDeadlock(tid)) {
+                                          removeFromWaitForGraph(tid);
+                                          throw new TransactionAbortedException();
+                                   }
                                    try {
-                                          wait();
+                                          wait(10);
                                    } catch (InterruptedException e) {
                                           throw new TransactionAbortedException();
                                    }
                                    continue;
                             }
+                            
+                            // Grant the lock
                             exclusiveLocks.put(pid, tid);
-                            if (transactionsWithLocks.get(tid) != null) {
-                                   transactionsWithLocks.get(tid).add(pid);
-                                   return;
-                            } else {
-                                   Set<PageId> pageIdSet = new HashSet<>();
-                                   pageIdSet.add(pid);
-                                   transactionsWithLocks.put(tid, pageIdSet);
-                                   return;
+                            removeFromWaitForGraph(tid);
+                            if (!transactionsWithLocks.containsKey(tid)) {
+                                   transactionsWithLocks.put(tid, new HashSet<>());
                             }
-                     } else {
+                            transactionsWithLocks.get(tid).add(pid);
+                            return;
+                            
+                     } else { // Shared lock request
                             if (exclusiveLocks.containsKey(pid) && !exclusiveLocks.get(pid).equals(tid)) {
+                                   TransactionId holder = exclusiveLocks.get(pid);
+                                   addToWaitForGraph(tid, holder);
+                                   if (hasDeadlock(tid)) {
+                                          removeFromWaitForGraph(tid);
+                                          throw new TransactionAbortedException();
+                                   }
                                    try {
-                                          wait();
+                                          wait(10);
                                    } catch (InterruptedException e) {
                                           throw new TransactionAbortedException();
                                    }
                                    continue;
                             }
+                            
+                            // Grant the shared lock
                             if (!sharedLocks.containsKey(pid)) {
                                    sharedLocks.put(pid, new HashSet<>());
                             }
                             sharedLocks.get(pid).add(tid);
-                            if (transactionsWithLocks.get(tid) != null) {
-                                   transactionsWithLocks.get(tid).add(pid);
-                                   return;
-                            } else {
-                                   Set<PageId> pageIdSet = new HashSet<>();
-                                   pageIdSet.add(pid);
-                                   transactionsWithLocks.put(tid, pageIdSet);
-                                   return;
+                            removeFromWaitForGraph(tid);
+                            if (!transactionsWithLocks.containsKey(tid)) {
+                                   transactionsWithLocks.put(tid, new HashSet<>());
                             }
+                            transactionsWithLocks.get(tid).add(pid);
+                            return;
                      }
               }
        }
@@ -106,6 +131,7 @@ class LockManager {
               if (lockedPages != null && lockedPages.isEmpty()) {
                      transactionsWithLocks.remove(tid);
               }
+              removeFromWaitForGraph(tid);
               notifyAll();
        }
 
@@ -126,6 +152,45 @@ class LockManager {
                             releaseLock(tid, pid);
                      }
               }
+       }
+       
+       private synchronized void addToWaitForGraph(TransactionId waiter, TransactionId holder) {
+              waitForGraph.putIfAbsent(waiter, new HashSet<>());
+              waitForGraph.get(waiter).add(holder);
+       }
+       
+       private synchronized void removeFromWaitForGraph(TransactionId tid) {
+              waitForGraph.remove(tid);
+              for (Set<TransactionId> edges : waitForGraph.values()) {
+                     edges.remove(tid);
+              }
+       }
+       
+       private synchronized boolean hasDeadlock(TransactionId start) {
+              Set<TransactionId> visited = new HashSet<>();
+              Set<TransactionId> recStack = new HashSet<>();
+              return detectCycle(start, visited, recStack);
+       }
+       
+       private boolean detectCycle(TransactionId current, Set<TransactionId> visited, 
+                                 Set<TransactionId> recStack) {
+              if (!visited.contains(current)) {
+                     visited.add(current);
+                     recStack.add(current);
+                     
+                     Set<TransactionId> waitingFor = waitForGraph.get(current);
+                     if (waitingFor != null) {
+                            for (TransactionId next : waitingFor) {
+                                   if (!visited.contains(next) && detectCycle(next, visited, recStack)) {
+                                         return true;
+                                   } else if (recStack.contains(next)) {
+                                         return true;
+                                   }
+                            }
+                     }
+              }
+              recStack.remove(current);
+              return false;
        }
 }
 
@@ -254,32 +319,31 @@ public class BufferPool {
         * @param commit a flag indicating whether we should commit or abort
         */
        public void transactionComplete(TransactionId tid, boolean commit) {
-              // some code goes here
-              // not necessary for lab1|lab2
-              
               synchronized (this) {
-                     if (commit) {
-                            try {
-                                   PageId[] pageIds=pageCache.keySet().toArray(new PageId[pageCache.size()]);
-                                   for (PageId pid :pageIds) {
+                     try {
+                            if (commit) {
+                                   // Flush all pages modified by this transaction
+                                   flushPages(tid);
+                            } else {
+                                   // Abort: restore dirty pages from disk
+                                   PageId[] pageIds = pageCache.keySet().toArray(new PageId[pageCache.size()]);
+                                   for (PageId pid : pageIds) {
                                           Page page = pageCache.get(pid);
-                                          if (page != null&&tid.equals(page.isDirty())) {
-                                                 flushPage(pid);
+                                          if (page != null && tid.equals(page.isDirty())) {
+                                                 // Remove the dirty page
+                                                 pageCache.remove(pid);
+                                                 // Restore clean version from disk
+                                                 DbFile dbFile = Database.getCatalog().getDatabaseFile(pid.getTableId());
+                                                 Page cleanPage = dbFile.readPage(pid);
+                                                 pageCache.put(pid, cleanPage);
                                           }
                                    }
-                            } catch (IOException e) {
-                                   System.err.println("Error flushing pages during commit: " + e.getMessage());
                             }
-                     } else {
-                            PageId[] pageIds =pageCache.keySet().toArray(new PageId[pageCache.size()]);
-                            for (PageId pid :pageIds) {
-                                   Page page = pageCache.get(pid);
-                                   if (page != null && tid.equals(page.isDirty())) {
-                                          pageCache.remove(pid);
-                                   }
-                            }
+                     } catch (IOException e) {
+                            throw new RuntimeException(e);
                      }
               }
+              // Release all locks after commit/abort
               lockManager.releaseAllLocks(tid);
        }
 
@@ -299,22 +363,18 @@ public class BufferPool {
         * @param t       the tuple to add
         */
        public void insertTuple(TransactionId tid, int tableId, Tuple t)
-                     throws DbException, IOException, TransactionAbortedException {
-              try {
-                     DbFile dbFile = Database.getCatalog().getDatabaseFile(tableId);
-                     List<Page> pages = dbFile.insertTuple(tid, t);
-                     for (Page page : pages) {
-                            page.markDirty(true, tid);
-                            pageCache.put(page.getId(), page);
-                     }
-              } catch (DbException e) {
-                     System.err.println("Database exception: " + e.getMessage());
-              } catch (TransactionAbortedException e) {
-                     System.err.println("Transaction aborted exception: " + e.getMessage());
-              } catch (IOException e) {
-                     System.err.println("I/O exception: " + e.getMessage());
-              }
-       }
+        throws DbException, IOException, TransactionAbortedException {
+    DbFile dbFile = Database.getCatalog().getDatabaseFile(tableId);
+    List<Page> pages = dbFile.insertTuple(tid, t);
+    for (Page page : pages) {
+        // First check if we need to evict
+        if (pageCache.size() >= maxPages) {
+            evictPage();
+        }
+        page.markDirty(true, tid);
+        pageCache.put(page.getId(), page);
+    }
+}
 
        /**
         * Remove the specified tuple from the buffer pool.
@@ -331,20 +391,12 @@ public class BufferPool {
         */
        public void deleteTuple(TransactionId tid, Tuple t)
                      throws DbException, IOException, TransactionAbortedException {
-              try {
-                     int tableId = t.getRecordId().getPageId().getTableId();
-                     DbFile dbFile = Database.getCatalog().getDatabaseFile(tableId);
-                     List<Page> pages = dbFile.deleteTuple(tid, t);
-                     for (Page page : pages) {
-                            page.markDirty(true, tid);
-                            pageCache.put(page.getId(), page);
-                     }
-              } catch (DbException e) {
-                     System.err.println("Database exception: " + e.getMessage());
-              } catch (TransactionAbortedException e) {
-                     System.err.println("Transaction aborted exception: " + e.getMessage());
-              } catch (IOException e) {
-                     System.err.println("I/O exception: " + e.getMessage());
+              int tableId = t.getRecordId().getPageId().getTableId();
+              DbFile dbFile = Database.getCatalog().getDatabaseFile(tableId);
+              List<Page> pages = dbFile.deleteTuple(tid, t);
+              for (Page page : pages) {
+                     page.markDirty(true, tid);
+                     pageCache.put(page.getId(), page);
               }
        }
 
@@ -398,8 +450,13 @@ public class BufferPool {
         * Write all pages of the specified transaction to disk.
         */
        public synchronized void flushPages(TransactionId tid) throws IOException {
-              // some code goes here
-              // not necessary for lab1|lab2
+              PageId[] pageIds = pageCache.keySet().toArray(new PageId[pageCache.size()]);
+              for (PageId pid : pageIds) {
+                     Page page = pageCache.get(pid);
+                     if (page != null && tid.equals(page.isDirty())) {
+                            flushPage(pid);
+                     }
+              }
        }
 
        /**

@@ -325,7 +325,7 @@ public class LogicalPlan {
                 throw new ParsingException("Unknown field in filter expression " + lf.fieldQuantifiedName);
             }
             if (ftyp == Type.INT_TYPE)
-                f = new IntField(new Integer(lf.c));
+                f = new IntField(Integer.parseInt(lf.c));
             else
                 f = new StringField(lf.c, Type.STRING_LEN);
 

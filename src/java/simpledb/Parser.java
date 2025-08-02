@@ -358,7 +358,7 @@ public class Parser {
                                 + zc.getValue()
                                 + " is not an integer, expected a string.");
                     }
-                    IntField f = new IntField(new Integer(zc.getValue()));
+                    IntField f = new IntField(Integer.parseInt(zc.getValue()));
                     t.setField(i, f);
                 } else if (zc.getType() == ZConstant.STRING) {
                     if (td.getFieldType(i) != Type.STRING_TYPE) {
