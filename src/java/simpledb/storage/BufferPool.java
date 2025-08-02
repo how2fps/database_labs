@@ -416,15 +416,16 @@ public class BufferPool {
               
               // no steal
               PageId pageToEvict = null;
-              for (PageId pid : pageCache.keySet()) {
+              PageId[] pageIds = pageCache.keySet().toArray(new PageId[pageCache.size()]);
+              for (PageId pid:pageIds){
                      Page page = pageCache.get(pid);
-                     if (page.isDirty()==null) {
+                     if ( page.isDirty()==null) {
                             pageToEvict = pid;
                             break;
                      }
               }
               if (pageToEvict == null) {
-                     throw new DbException("All pages in buffer pool are dirty, cannot evict any page");
+                     throw new DbException("All pages in buffer pool are dirty,cannot evict any page ");
               }
               
               pageCache.remove(pageToEvict);
