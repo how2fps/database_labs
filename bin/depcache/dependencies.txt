@@ -2378,11 +2378,13 @@ java.lang.IllegalArgumentException
 simpledb.storage.Field
 java.io.File
 simpledb.index.BTreeFile
+java.util.List
 simpledb.index.BTreeInternalPage
 simpledb.storage.RecordId
 java.lang.Object
 simpledb.common.Debug
 java.lang.invoke.StringConcatFactory
+java.util.Collections
 simpledb.transaction.TransactionAbortedException
 ||:simpledb.HeapFileWriteTest
 simpledb.TestUtil
