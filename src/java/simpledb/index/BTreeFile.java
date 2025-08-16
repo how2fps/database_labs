@@ -377,7 +377,7 @@ public class BTreeFile implements DbFile {
                             tid, dirtypages, BTreePageId.INTERNAL);
               BTreePageId newRightPageId = newRightPage.getId();
 
-              int middleIndex = (page.getMaxEntries() / 2) + 1;
+              int middleIndex = page.getNumEntries() / 2;
               Iterator<BTreeEntry> pageIterator = page.reverseIterator();
               while (page.getNumEntries() > middleIndex) {
                      BTreeEntry entry = pageIterator.next();
