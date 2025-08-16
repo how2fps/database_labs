@@ -287,57 +287,71 @@ public class BTreeFile implements DbFile {
        public BTreeLeafPage splitLeafPage(TransactionId tid, Map<PageId, Page> dirtypages, BTreeLeafPage page,
                      Field field)
                      throws DbException, IOException, TransactionAbortedException {
-              BTreePageId leftPageId = page.getId();
-              BTreePageId oldRightSiblingId = page.getRightSiblingId();
+                     BTreePageId leftPageId = page.getId();
+                     BTreePageId oldRightSiblingId = page.getRightSiblingId();
 
-              BTreeLeafPage newRightPage = (BTreeLeafPage) getEmptyPage(tid, dirtypages, BTreePageId.LEAF);
-              BTreePageId newRightPageId = newRightPage.getId();
+                     BTreeLeafPage newRightPage = (BTreeLeafPage) getEmptyPage(tid, dirtypages, BTreePageId.LEAF);
+                     BTreePageId newRightPageId = newRightPage.getId();
 
-              Iterator<Tuple> pageIterator = page.reverseIterator();
-              if (pageIterator == null || !pageIterator.hasNext()) {
-                     throw new DbException("No more tuples left in the page.");
-              }
+                     // Collect all tuples in sorted order
+                     ArrayList<Tuple> tuples = new ArrayList<>();
+                     Iterator<Tuple> it = page.iterator();
+                     while (it.hasNext()) {
+                            tuples.add(it.next());
+                     }
 
-              int middleIndex = page.getNumTuples() / 2;
-              while (page.getNumTuples() > middleIndex) {
-                     Tuple tuple = pageIterator.next();
-                     page.deleteTuple(tuple);
-                     newRightPage.insertTuple(tuple);
-              }
+                     int total = tuples.size();
+                     int leftCount = total / 2;
+                     int rightCount = total - leftCount;
 
-              if (oldRightSiblingId != null) {
-                     BTreeLeafPage oldRightPage = (BTreeLeafPage) getPage(
+                     // Remove all tuples from original page
+                     for (Tuple t : tuples) {
+                            page.deleteTuple(t);
+                     }
+
+                     // Insert left half back to original page
+                     for (int i = 0; i < leftCount; i++) {
+                            page.insertTuple(tuples.get(i));
+                     }
+                     // Insert right half to new right page
+                     for (int i = leftCount; i < total; i++) {
+                            newRightPage.insertTuple(tuples.get(i));
+                     }
+
+                     // Update sibling pointers
+                     if (oldRightSiblingId != null) {
+                            BTreeLeafPage oldRightPage = (BTreeLeafPage) getPage(
                                    tid, dirtypages, oldRightSiblingId, Permissions.READ_WRITE);
-                     oldRightPage.setLeftSiblingId(newRightPageId);
-                     dirtypages.put(oldRightSiblingId, oldRightPage);
-              }
+                            oldRightPage.setLeftSiblingId(newRightPageId);
+                            dirtypages.put(oldRightSiblingId, oldRightPage);
+                     }
+                     newRightPage.setLeftSiblingId(leftPageId);
+                     newRightPage.setRightSiblingId(oldRightSiblingId);
+                     page.setRightSiblingId(newRightPageId);
 
-              newRightPage.setLeftSiblingId(leftPageId);
-              newRightPage.setRightSiblingId(oldRightSiblingId);
-              page.setRightSiblingId(newRightPageId);
+                     // The split key is the first tuple in the right page
+                     Field splitKey = newRightPage.iterator().next().getField(keyField);
 
-              Field splitKey = newRightPage.iterator().next().getField(keyField);
-
-              BTreeInternalPage parentPage = getParentWithEmptySlots(
+                     BTreeInternalPage parentPage = getParentWithEmptySlots(
                             tid, dirtypages, page.getParentId(), splitKey);
+                     BTreePageId parentPageId = parentPage.getId();
+                     page.setParentId(parentPageId);
+                     newRightPage.setParentId(parentPageId);
 
-              BTreePageId parentPageId = parentPage.getId();
-              page.setParentId(parentPageId);
-              newRightPage.setParentId(parentPageId);
+                     BTreeEntry newParentEntry = new BTreeEntry(splitKey, page.getId(), newRightPageId);
+                     parentPage.insertEntry(newParentEntry);
+                     updateParentPointers(tid, dirtypages, parentPage);
 
-              BTreeEntry newParentEntry = new BTreeEntry(splitKey, page.getId(), newRightPageId);
-              parentPage.insertEntry(newParentEntry);
-              updateParentPointers(tid, dirtypages, parentPage);
+                     dirtypages.put(leftPageId, page);
+                     dirtypages.put(newRightPageId, newRightPage);
+                     dirtypages.put(parentPageId, parentPage);
 
-              dirtypages.put(leftPageId, page);
-              dirtypages.put(newRightPageId, newRightPage);
-              dirtypages.put(parentPageId, parentPage);
-
-              if (field == null || field.compare(Op.LESS_THAN_OR_EQ, splitKey)) {
-                     return page;
-              } else {
-                     return newRightPage;
-              }
+                     // Return the correct page for insertion
+                     if (field == null || field.compare(Op.LESS_THAN_OR_EQ, splitKey)) {
+                            return page;
+                     } else {
+                            return newRightPage;
+                     }
        }
 
        /**
@@ -372,52 +386,71 @@ public class BTreeFile implements DbFile {
        public BTreeInternalPage splitInternalPage(TransactionId tid, Map<PageId, Page> dirtypages,
                      BTreeInternalPage page, Field field)
                      throws DbException, IOException, TransactionAbortedException {
-              BTreePageId leftPageId = page.getId();
-              BTreeInternalPage newRightPage = (BTreeInternalPage) getEmptyPage(
+                     BTreePageId leftPageId = page.getId();
+                     BTreeInternalPage newRightPage = (BTreeInternalPage) getEmptyPage(
                             tid, dirtypages, BTreePageId.INTERNAL);
-              BTreePageId newRightPageId = newRightPage.getId();
+                     BTreePageId newRightPageId = newRightPage.getId();
 
-              int middleIndex = page.getNumEntries() / 2;
-              Iterator<BTreeEntry> pageIterator = page.reverseIterator();
-              while (page.getNumEntries() > middleIndex) {
-                     BTreeEntry entry = pageIterator.next();
-                     page.deleteKeyAndRightChild(entry);
-                     newRightPage.insertEntry(entry);
-              }
+                     // Collect all entries in sorted order
+                     ArrayList<BTreeEntry> entries = new ArrayList<>();
+                     Iterator<BTreeEntry> it = page.iterator();
+                     while (it.hasNext()) {
+                            entries.add(it.next());
+                     }
 
-              BTreeEntry middleEntry = pageIterator.next();
-              page.deleteKeyAndRightChild(middleEntry);
-              Field splitKey = middleEntry.getKey();
+                     int total = entries.size();
+                     int middle = total / 2;
 
-              Iterator<BTreeEntry> newRightPageIterator = newRightPage.reverseIterator();
-              while (newRightPageIterator.hasNext()) {
-                     BTreeEntry rightPageEntry = newRightPageIterator.next();
-                     BTreePageId leftChildId = rightPageEntry.getLeftChild();
-                     BTreePage leftChild = (BTreePage) getPage(tid, dirtypages, leftChildId, Permissions.READ_WRITE);
-                     leftChild.setParentId(newRightPageId);
-                     BTreePageId rightChildId = rightPageEntry.getRightChild();
-                     BTreePage rightChild = (BTreePage) getPage(tid, dirtypages, rightChildId, Permissions.READ_WRITE);
-                     rightChild.setParentId(newRightPageId);
-              }
+                     // Remove all entries from original page
+                     for (BTreeEntry e : entries) {
+                            page.deleteKeyAndRightChild(e);
+                     }
 
-              BTreeInternalPage parentPage = getParentWithEmptySlots(
+                     // Insert left half back to original page
+                     for (int i = 0; i < middle; i++) {
+                            page.insertEntry(entries.get(i));
+                     }
+
+                     // The middle entry is pushed up to parent
+                     BTreeEntry middleEntry = entries.get(middle);
+                     Field splitKey = middleEntry.getKey();
+
+                     // Insert right half to new right page
+                     for (int i = middle + 1; i < total; i++) {
+                            newRightPage.insertEntry(entries.get(i));
+                     }
+
+                     // Update parent pointers for children in new right page
+                     Iterator<BTreeEntry> newRightPageIterator = newRightPage.iterator();
+                     while (newRightPageIterator.hasNext()) {
+                            BTreeEntry rightPageEntry = newRightPageIterator.next();
+                            BTreePageId leftChildId = rightPageEntry.getLeftChild();
+                            BTreePage leftChild = (BTreePage) getPage(tid, dirtypages, leftChildId, Permissions.READ_WRITE);
+                            leftChild.setParentId(newRightPageId);
+                            BTreePageId rightChildId = rightPageEntry.getRightChild();
+                            BTreePage rightChild = (BTreePage) getPage(tid, dirtypages, rightChildId, Permissions.READ_WRITE);
+                            rightChild.setParentId(newRightPageId);
+                     }
+
+                     BTreeInternalPage parentPage = getParentWithEmptySlots(
                             tid, dirtypages, page.getParentId(), splitKey);
-              BTreePageId parentPageId = parentPage.getId();
-              page.setParentId(parentPageId);
-              newRightPage.setParentId(parentPageId);
-              BTreeEntry parentEntry = new BTreeEntry(splitKey, leftPageId, newRightPageId);
-              parentPage.insertEntry(parentEntry);
+                     BTreePageId parentPageId = parentPage.getId();
+                     page.setParentId(parentPageId);
+                     newRightPage.setParentId(parentPageId);
+                     BTreeEntry parentEntry = new BTreeEntry(splitKey, leftPageId, newRightPageId);
+                     parentPage.insertEntry(parentEntry);
 
-              dirtypages.put(leftPageId, page);
-              dirtypages.put(newRightPageId, newRightPage);
-              dirtypages.put(parentPageId, parentPage);
-              updateParentPointers(tid, dirtypages, parentPage);
+                     dirtypages.put(leftPageId, page);
+                     dirtypages.put(newRightPageId, newRightPage);
+                     dirtypages.put(parentPageId, parentPage);
+                     updateParentPointers(tid, dirtypages, parentPage);
 
-              if (field == null || field.compare(Op.LESS_THAN_OR_EQ, splitKey)) {
-                     return page;
-              } else {
-                     return newRightPage;
-              }
+                     // Return the correct page for insertion
+                     if (field == null || field.compare(Op.LESS_THAN_OR_EQ, splitKey)) {
+                            return page;
+                     } else {
+                            return newRightPage;
+                     }
        }
 
        /**
