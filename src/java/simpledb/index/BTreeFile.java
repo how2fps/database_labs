@@ -217,22 +217,25 @@ public class BTreeFile implements DbFile {
               if (pid.pgcateg() == BTreePageId.LEAF) {
                      return (BTreeLeafPage) getPage(tid, dirtypages, pid, perm);
               }
-              BTreeInternalPage iPage = (BTreeInternalPage) getPage(tid, dirtypages, pid, Permissions.READ_ONLY);
-              Iterator<BTreeEntry> iPageIterator = iPage.iterator();
-              if (f == null) {
-                     return findLeafPage(tid, dirtypages, iPageIterator.next().getLeftChild(), perm, f);
-              }
-              BTreePageId id = null;
-              while (iPageIterator.hasNext()) {
-                     BTreeEntry currentEntry = iPageIterator.next();
-                     if (!currentEntry.getKey().compare(Op.GREATER_THAN, f)) {
-                            id = currentEntry.getLeftChild();
-                            break;
-                     } else {
-                            id = currentEntry.getRightChild();
+              if (pid.pgcateg() == BTreePageId.INTERNAL) {
+                     BTreeInternalPage iPage = (BTreeInternalPage) getPage(tid, dirtypages, pid, Permissions.READ_ONLY);
+                     Iterator<BTreeEntry> iPageIterator = iPage.iterator();
+                     if (iPageIterator == null || !iPageIterator.hasNext()) {
+                            throw new DbException("No more entries.");
                      }
+                     if (f == null) {
+                            return findLeafPage(tid, dirtypages, iPageIterator.next().getLeftChild(), perm, f);
+                     }
+                     BTreeEntry currentEntry = null;
+                     while (iPageIterator.hasNext()) {
+                            currentEntry = iPageIterator.next();
+                            if (currentEntry.getKey().compare(Op.GREATER_THAN_OR_EQ, f)) {
+                                   return findLeafPage(tid, dirtypages, currentEntry.getLeftChild(), perm, f);
+                            }
+                     }
+                     return findLeafPage(tid, dirtypages, currentEntry.getRightChild(), perm, f);
               }
-              return findLeafPage(tid, dirtypages, id, perm, f);
+              throw new DbException("Pick only LEAF or INTERNAL page type");
        }
 
        /**
@@ -295,7 +298,7 @@ public class BTreeFile implements DbFile {
                      throw new DbException("No more tuples left in the page.");
               }
 
-              int middleIndex = (page.getNumTuples() + 1) / 2;
+              int middleIndex = page.getNumTuples() / 2;
 
               while (page.getNumTuples() > middleIndex) {
                      Tuple tuple = pageIterator.next();
@@ -325,13 +328,10 @@ public class BTreeFile implements DbFile {
 
               BTreeEntry newParentEntry = new BTreeEntry(splitKey, page.getId(), newRightPageId);
               parentPage.insertEntry(newParentEntry);
+              updateParentPointers(tid, dirtypages, parentPage);
               dirtypages.put(leftPageId, page);
               dirtypages.put(newRightPageId, newRightPage);
               dirtypages.put(parentPageId, parentPage);
-              System.out.println("Left tuples: " + page.getNumTuples());
-              System.out.println("Right tuples: " + newRightPage.getNumTuples());
-              System.out.println("Split key: " + splitKey);
-              updateParentPointers(tid, dirtypages, parentPage);
               if (field == null || field.compare(Op.LESS_THAN_OR_EQ, splitKey)) {
                      return page;
               } else {
@@ -375,6 +375,7 @@ public class BTreeFile implements DbFile {
               BTreeInternalPage newRightPage = (BTreeInternalPage) getEmptyPage(
                             tid, dirtypages, BTreePageId.INTERNAL);
               BTreePageId newRightPageId = newRightPage.getId();
+
               int middleIndex = (page.getMaxEntries() / 2) + 1;
               Iterator<BTreeEntry> pageIterator = page.reverseIterator();
               while (page.getNumEntries() > middleIndex) {
@@ -382,9 +383,11 @@ public class BTreeFile implements DbFile {
                      page.deleteKeyAndRightChild(entry);
                      newRightPage.insertEntry(entry);
               }
+
               BTreeEntry middleEntry = pageIterator.next();
               page.deleteKeyAndRightChild(middleEntry);
               Field splitKey = middleEntry.getKey();
+
               Iterator<BTreeEntry> newRightPageIterator = newRightPage.reverseIterator();
               while (newRightPageIterator.hasNext()) {
                      BTreeEntry rightPageEntry = newRightPageIterator.next();
@@ -395,6 +398,7 @@ public class BTreeFile implements DbFile {
                      BTreePage rightChild = (BTreePage) getPage(tid, dirtypages, rightChildId, Permissions.READ_WRITE);
                      rightChild.setParentId(newRightPageId);
               }
+
               BTreeInternalPage parentPage = getParentWithEmptySlots(
                             tid, dirtypages, page.getParentId(), splitKey);
               BTreePageId parentPageId = parentPage.getId();
@@ -405,6 +409,8 @@ public class BTreeFile implements DbFile {
               dirtypages.put(leftPageId, page);
               dirtypages.put(newRightPageId, newRightPage);
               dirtypages.put(parentPageId, parentPage);
+              updateParentPointers(tid, dirtypages, parentPage);
+
               if (field == null || field.compare(Op.LESS_THAN_OR_EQ, splitKey)) {
                      return page;
               } else {
