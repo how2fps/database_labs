@@ -292,14 +292,13 @@ public class BTreeFile implements DbFile {
 
               BTreeLeafPage newRightPage = (BTreeLeafPage) getEmptyPage(tid, dirtypages, BTreePageId.LEAF);
               BTreePageId newRightPageId = newRightPage.getId();
-              Iterator<Tuple> pageIterator = page.reverseIterator();
 
+              Iterator<Tuple> pageIterator = page.reverseIterator();
               if (pageIterator == null || !pageIterator.hasNext()) {
                      throw new DbException("No more tuples left in the page.");
               }
 
               int middleIndex = page.getNumTuples() / 2;
-
               while (page.getNumTuples() > middleIndex) {
                      Tuple tuple = pageIterator.next();
                      page.deleteTuple(tuple);
@@ -329,9 +328,11 @@ public class BTreeFile implements DbFile {
               BTreeEntry newParentEntry = new BTreeEntry(splitKey, page.getId(), newRightPageId);
               parentPage.insertEntry(newParentEntry);
               updateParentPointers(tid, dirtypages, parentPage);
+
               dirtypages.put(leftPageId, page);
               dirtypages.put(newRightPageId, newRightPage);
               dirtypages.put(parentPageId, parentPage);
+
               if (field == null || field.compare(Op.LESS_THAN_OR_EQ, splitKey)) {
                      return page;
               } else {
@@ -406,6 +407,7 @@ public class BTreeFile implements DbFile {
               newRightPage.setParentId(parentPageId);
               BTreeEntry parentEntry = new BTreeEntry(splitKey, leftPageId, newRightPageId);
               parentPage.insertEntry(parentEntry);
+
               dirtypages.put(leftPageId, page);
               dirtypages.put(newRightPageId, newRightPage);
               dirtypages.put(parentPageId, parentPage);
