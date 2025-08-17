@@ -159,44 +159,24 @@ public class HeapFile implements DbFile {
        // see DbFile.java for javadocs
        public DbFileIterator iterator(TransactionId tid) {
               return new DbFileIterator() {
+                     private boolean opened = false;
                      private int pageNo = 0;
                      private Iterator<Tuple> tupleIterator = null;
-                     private boolean opened = false;
 
                      @Override
                      public void open() throws DbException, TransactionAbortedException {
-                            opened=true;
+                            opened = true;
                             pageNo = 0;
-                            tupleIterator = null;
-                            while (pageNo < numPages()) {
-                                   HeapPageId pid = new HeapPageId(getId(), pageNo);
-                                   try {
-                                          HeapPage page = (HeapPage) Database.getBufferPool().getPage(
-                                                        tid, pid, Permissions.READ_ONLY);
-                                          Iterator<Tuple> pageIterator = page.iterator();
-                                          pageNo++;
-                                          if (pageIterator.hasNext()) {
-                                                 tupleIterator = pageIterator;
-                                                 return;
-                                          }
-                                   } catch (TransactionAbortedException transactionAbortedException) {
-                                          throw transactionAbortedException;
-                                   } catch (Exception e) {
-                                          throw new DbException(e.getMessage());
-                                   }
-                            }
                             tupleIterator = null;
                      }
 
                      @Override
                      public boolean hasNext() throws DbException, TransactionAbortedException {
-                            if (!opened){
+                            if (!opened) {
                                    return false;
                             }
-                            while (tupleIterator == null || !tupleIterator.hasNext()) {
-                                   if (pageNo >= numPages()) {
-                                          return false;
-                                   }
+
+                            while ((tupleIterator == null || !tupleIterator.hasNext()) && pageNo < numPages()) {
                                    HeapPageId pid = new HeapPageId(getId(), pageNo);
                                    try {
                                           HeapPage page = (HeapPage) Database.getBufferPool().getPage(
@@ -209,7 +189,8 @@ public class HeapFile implements DbFile {
                                           throw new DbException(e.getMessage());
                                    }
                             }
-                            return true;
+
+                            return tupleIterator != null && tupleIterator.hasNext();
                      }
 
                      @Override
@@ -225,6 +206,9 @@ public class HeapFile implements DbFile {
 
                      @Override
                      public void rewind() throws DbException, TransactionAbortedException {
+                            if (!opened) {
+                                   throw new DbException("Iterator not open");
+                            }
                             close();
                             open();
                      }
